@@ -31,10 +31,19 @@ jobs:
           ref: ${{ inputs.tag || github.ref }}
 
       - name: Install Nix
-        uses: DeterminateSystems/determinate-nix-action@v3
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
 
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Cache Nix store
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-store-${{ runner.os }}-${{ hashFiles('flake.lock', 'Cargo.lock') }}
+          restore-keys: |
+            nix-store-${{ runner.os }}-
 
       - name: Build release binary
         run: |
@@ -150,7 +159,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
       - uses: DeterminateSystems/flakehub-push@main
         with:
