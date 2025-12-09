@@ -28,10 +28,4 @@ COPY --from=builder /output/app /app
 # Set PATH to include the tools
 ENV PATH="/app/bin:${PATH}"
 
-# Run as non-root
-RUN adduser -D mcp
-USER mcp
-
-WORKDIR /home/mcp
-
 ENTRYPOINT ["/app/bin/modern-cli-mcp"]
