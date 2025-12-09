@@ -1,5 +1,5 @@
 # Dockerfile
-# Multi-stage build using Nix for reproducible builds
+# Multi-stage build for Modern CLI MCP using Nix
 
 FROM nixos/nix:latest AS builder
 
@@ -11,23 +11,19 @@ WORKDIR /build
 # Copy source
 COPY . .
 
-# Build with Nix (includes all CLI tools)
-RUN nix build .#full --no-link --print-out-paths > /tmp/store-path
+# Build with Nix and copy the closure to a predictable location
+RUN nix build .#full --no-link && \
+    mkdir -p /output && \
+    cp -rL $(nix build .#full --print-out-paths) /output/app
 
-# Create a minimal runtime image
+# Runtime image
 FROM nixos/nix:latest
 
 # Enable flakes
 RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# Copy the built package from builder
-COPY --from=builder /tmp/store-path /tmp/store-path
-
-# Copy the actual store paths
-RUN --mount=type=cache,target=/nix/store,from=builder,source=/nix/store \
-    STORE_PATH=$(cat /tmp/store-path) && \
-    nix-store --realise $STORE_PATH && \
-    ln -s $STORE_PATH /app
+# Copy the built package (dereferenced, so all files included)
+COPY --from=builder /output/app /app
 
 # Set PATH to include the tools
 ENV PATH="/app/bin:${PATH}"
@@ -38,4 +34,4 @@ USER mcp
 
 WORKDIR /home/mcp
 
-ENTRYPOINT ["modern-cli-mcp"]
+ENTRYPOINT ["/app/bin/modern-cli-mcp"]
