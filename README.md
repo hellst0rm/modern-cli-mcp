@@ -1,7 +1,12 @@
 # Modern CLI MCP Server
 
 [![CI](https://github.com/hellst0rm/modern-cli-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/hellst0rm/modern-cli-mcp/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/hellst0rm/modern-cli-mcp)](https://github.com/hellst0rm/modern-cli-mcp/releases)
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-blue)](https://ghcr.io/hellst0rm/modern-cli-mcp)
+[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/hellst0rm/modern-cli-mcp/badge)](https://flakehub.com/flake/hellst0rm/modern-cli-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**[Documentation](https://hellst0rm.github.io/modern-cli-mcp/)** · **[Tools](https://hellst0rm.github.io/modern-cli-mcp/tools.html)**
 
 MCP server exposing **70+ modern CLI tools** to AI/LLM agents. Provides structured JSON-RPC access to filesystem, Git forges, containers, Kubernetes, and data transformation tools—all optimized for AI consumption with JSON output.
 
