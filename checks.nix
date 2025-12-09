@@ -25,11 +25,19 @@ let
   '';
 
   # Check Rust formatting
-  rustfmtCheck = pkgs.runCommand "rustfmt-check" { } ''
-    cd ${src}
-    ${pkgs.rustfmt}/bin/rustfmt --check src/**/*.rs
-    touch $out
-  '';
+  rustfmtCheck =
+    pkgs.runCommand "rustfmt-check"
+      {
+        nativeBuildInputs = [
+          pkgs.cargo
+          pkgs.rustfmt
+        ];
+      }
+      ''
+        cd ${src}
+        cargo fmt --check
+        touch $out
+      '';
 in
 {
   inherit
@@ -40,15 +48,18 @@ in
     ;
 
   # All checks combined
-  all = pkgs.runCommand "all-checks" {
-    buildInputs = [
-      formatCheck
-      deadnixCheck
-      statixCheck
-      rustfmtCheck
-    ];
-  } ''
-    echo "All checks passed!"
-    touch $out
-  '';
+  all =
+    pkgs.runCommand "all-checks"
+      {
+        buildInputs = [
+          formatCheck
+          deadnixCheck
+          statixCheck
+          rustfmtCheck
+        ];
+      }
+      ''
+        echo "All checks passed!"
+        touch $out
+      '';
 }

@@ -1,5 +1,10 @@
 # shell.nix
-{ inputs, pkgs, pre-commit-check, ... }:
+{
+  inputs,
+  pkgs,
+  pre-commit-check,
+  ...
+}:
 let
   inherit (pkgs.stdenv.hostPlatform) system;
 

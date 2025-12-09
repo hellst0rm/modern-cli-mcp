@@ -1,6 +1,5 @@
 # githooks.nix - Git hooks configuration using cachix/git-hooks.nix
-{ pkgs }:
-{
+_: {
   # Nix formatting
   nixfmt-rfc-style.enable = true;
 

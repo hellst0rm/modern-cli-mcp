@@ -20,7 +20,8 @@ impl CommandExecutor {
         args: &[&str],
         working_dir: Option<&str>,
     ) -> Result<CommandOutput, String> {
-        let cmd_path = which::which(cmd).map_err(|_| format!("Command '{}' not found in PATH", cmd))?;
+        let cmd_path =
+            which::which(cmd).map_err(|_| format!("Command '{}' not found in PATH", cmd))?;
 
         let mut command = Command::new(&cmd_path);
         command
@@ -57,7 +58,8 @@ impl CommandExecutor {
     ) -> Result<CommandOutput, String> {
         use tokio::io::AsyncWriteExt;
 
-        let cmd_path = which::which(cmd).map_err(|_| format!("Command '{}' not found in PATH", cmd))?;
+        let cmd_path =
+            which::which(cmd).map_err(|_| format!("Command '{}' not found in PATH", cmd))?;
 
         let mut child = Command::new(&cmd_path)
             .args(args)
