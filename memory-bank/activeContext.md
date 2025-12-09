@@ -12,33 +12,35 @@ tags:
 
 ## Current Focus
 
-Initial release and CI stabilization.
+Major v0.2.0 expansion with 70+ tools, project infrastructure, and website.
 
 ## Recent Events (Last 10)
 
-1. [2025-12-09] Created project structure with Nix flake, devshell, pog scripts
-2. [2025-12-09] Centralized package lists in pkgs.nix
-3. [2025-12-09] Added standard project files (.gitignore, .editorconfig, .envrc)
-4. [2025-12-09] Added checks.nix with formatCheck, deadnixCheck, statixCheck, rustfmtCheck
-5. [2025-12-09] Added githooks.nix for pre-commit hooks
-6. [2025-12-09] Created README.md, CLAUDE.md, LICENSE (MIT)
-7. [2025-12-09] Created Dockerfile and CI/CD workflows
-8. [2025-12-09] Published to GitHub as hellst0rm/modern-cli-mcp
-9. [2025-12-09] Fixed CI: dtolnay/rust-action → rust-toolchain, deadnix unused arg, formatting
-10. [2025-12-09] Created memory-bank and registered project
+1. [2025-12-09] Added 31 new tools: Git forges (gh, glab), containers (podman, dive, skopeo, crane, trivy), Kubernetes (kubectl, helm, stern, kustomize), data transform (gron, htmlq, pup, miller, dasel)
+2. [2025-12-09] Created GitHub workflows: ci.yml (with paths-ignore), publish.yml (binaries, Docker, FlakeHub, SBOM), claude.yml
+3. [2025-12-09] Created .claude/ directory: settings.json, commands/release.md, agents/rust-mcp-expert.md, agents/cli-tools-expert.md
+4. [2025-12-09] Created RELEASE_NOTES.md (v0.1.0, v0.2.0) and RELEASE_WORKFLOW.md
+5. [2025-12-09] Updated README.md with 70+ tools documentation in table format
+6. [2025-12-09] Created Dockerfile with multi-stage Nix build
+7. [2025-12-09] Created website scaffold: Bun/ElysiaJS/HTMX/Hyperscript/UnoCSS
+8. [2025-12-09] Website files: package.json, src/index.ts, uno.config.ts, public/styles.css
+9. [2025-12-09] Updated .gitignore, .editorconfig, .dockerignore for new project structure
+10. [2025-12-09] All tools default to JSON output for AI/LLM consumption
 
-## Active Decisions
+## Observations
 
-- [decision] Using flake-utils instead of flake-parts (simpler)
-- [decision] MIT license
-- [decision] Categories: filesystem, search, text, system, network, diff, test, reference, archive, queue
+- [decision] JSON preferred over JSONL for MCP (single response, nested structure, jq compatible)
+- [decision] TUI tools excluded (k9s, lazydocker, jnv) - require interactive terminals
+- [decision] Website stack: Bun/ElysiaJS/HTMX/Hyperscript/UnoCSS (not Next.js)
+- [decision] CI paths-ignore: docs, memory-bank, .claude/, website, scripts
+- [decision] FlakeHub publishing for Nix distribution
 
 ## Next Steps
 
-- [ ] Verify CI passes on GitHub
-- [ ] Add more comprehensive tests
-- [ ] Consider adding more tools
-- [ ] Create release v0.1.0
+- [ ] Test website with `bun run dev`
+- [ ] Create website deployment workflow
+- [ ] Tag and release v0.2.0
+- [ ] Verify Docker image builds correctly
 
 ## Relations
 
