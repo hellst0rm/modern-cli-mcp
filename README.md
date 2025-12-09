@@ -1,13 +1,24 @@
 # Modern CLI MCP Server
 
 [![CI](https://github.com/hellst0rm/modern-cli-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/hellst0rm/modern-cli-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-MCP server exposing modern CLI tools for AI/LLM agents. Provides structured access to tools like `eza`, `bat`, `fd`, `rg`, `delta`, `jq`, and 20+ more utilities.
+MCP server exposing **70+ modern CLI tools** to AI/LLM agents. Provides structured JSON-RPC access to filesystem, Git forges, containers, Kubernetes, and data transformation tools—all optimized for AI consumption with JSON output.
+
+## Features
+
+- **70+ Tools**: Filesystem, search, Git (GitHub/GitLab), containers, Kubernetes, data processing
+- **AI-Optimized Output**: JSON by default for structured parsing
+- **Zero Config**: Nix bundles all dependencies—no manual tool installation
+- **Stateless**: No caching, no state files, just tools
 
 ## Quick Start
 
-### Option 1: Using Nix (Recommended)
+### Claude Desktop / Claude Code
 
+Add to your MCP configuration:
+
+**Option 1: Nix (Recommended)**
 ```json
 {
   "mcpServers": {
@@ -19,8 +30,7 @@ MCP server exposing modern CLI tools for AI/LLM agents. Provides structured acce
 }
 ```
 
-### Option 2: Using Docker
-
+**Option 2: Docker**
 ```json
 {
   "mcpServers": {
@@ -32,10 +42,7 @@ MCP server exposing modern CLI tools for AI/LLM agents. Provides structured acce
 }
 ```
 
-### Option 3: Pre-built Binary
-
-Download from [Releases](https://github.com/hellst0rm/modern-cli-mcp/releases) and add to your MCP config:
-
+**Option 3: Binary**
 ```json
 {
   "mcpServers": {
@@ -46,50 +53,101 @@ Download from [Releases](https://github.com/hellst0rm/modern-cli-mcp/releases) a
 }
 ```
 
-## Available Tools
+## Available Tools (70+)
 
 ### Filesystem
-- `eza` - Modern ls replacement with icons and git integration
-- `bat` - Cat with syntax highlighting
-- `fd` - Fast find alternative
-- `duf` - Disk usage viewer
-- `dust` - Directory size analyzer
-- `trash_put/list/empty` - Safe file deletion
+| Tool | Description |
+|------|-------------|
+| `eza` | Modern ls with icons and git integration |
+| `bat` | Cat with syntax highlighting |
+| `fd` | Fast find alternative |
+| `duf` | Disk usage viewer (JSON) |
+| `dust` | Directory size analyzer |
+| `trash_*` | Safe file deletion |
 
 ### Search
-- `rg` - Ripgrep for fast content search
-- `fzf_filter` - Fuzzy filtering
-- `ast_grep` - AST-based code search
+| Tool | Description |
+|------|-------------|
+| `rg` | Ripgrep for fast content search (JSON) |
+| `fzf_filter` | Fuzzy filtering |
+| `ast_grep` | AST-based code search (JSON) |
 
-### Text Processing
-- `jq` - JSON processor
-- `yq` - YAML/JSON/XML processor
-- `xsv` - CSV toolkit
-- `sd` - Find and replace
-- `hck` - Field extraction
+### Git Forges
+| Tool | Description |
+|------|-------------|
+| `gh_repo` | GitHub repository operations (JSON) |
+| `gh_issue` | GitHub issues (JSON) |
+| `gh_pr` | GitHub pull requests (JSON) |
+| `gh_search` | Search repos, issues, PRs, code (JSON) |
+| `gh_release` | GitHub releases (JSON) |
+| `gh_workflow` | GitHub Actions workflows (JSON) |
+| `gh_run` | GitHub Actions runs (JSON) |
+| `gh_api` | Direct GitHub API access (JSON) |
+| `glab_issue` | GitLab issues (JSON) |
+| `glab_mr` | GitLab merge requests (JSON) |
+| `glab_pipeline` | GitLab CI/CD pipelines (JSON) |
 
-### System
-- `procs` - Process viewer
-- `tokei` - Code statistics
-- `hyperfine` - Benchmarking
-- `system_info` - Resource usage
+### Containers
+| Tool | Description |
+|------|-------------|
+| `podman` | Container operations (JSON) |
+| `dive` | Image layer analysis |
+| `skopeo` | Registry operations (JSON) |
+| `crane` | Low-level registry tool (JSON) |
+| `trivy` | Security vulnerability scanner (JSON) |
+
+### Kubernetes
+| Tool | Description |
+|------|-------------|
+| `kubectl_get` | Get resources (JSON) |
+| `kubectl_describe` | Describe resources |
+| `kubectl_logs` | Pod logs |
+| `kubectl_apply` | Apply manifests |
+| `kubectl_delete` | Delete resources |
+| `kubectl_exec` | Execute in pods |
+| `stern` | Multi-pod log aggregation (JSON) |
+| `helm` | Chart management (JSON) |
+| `kustomize` | Manifest building |
+
+### Data Transformation
+| Tool | Description |
+|------|-------------|
+| `jq` | JSON processor |
+| `yq` | YAML/JSON/XML processor |
+| `gron` | JSON→greppable format |
+| `htmlq` | jq for HTML |
+| `pup` | HTML parser (JSON) |
+| `miller` | Multi-format processor |
+| `dasel` | Universal data selector |
 
 ### Network
-- `http` - HTTP requests (xh)
-- `dns` - DNS lookups (doggo)
-- `usql` - Universal SQL client
+| Tool | Description |
+|------|-------------|
+| `http` | HTTP requests (xh) |
+| `dns` | DNS lookups (doggo) |
+| `usql` | Universal SQL client |
+
+### System
+| Tool | Description |
+|------|-------------|
+| `procs` | Process viewer (JSON) |
+| `tokei` | Code statistics (JSON) |
+| `hyperfine` | Benchmarking (JSON) |
 
 ### Diff/Git
-- `delta` - Syntax-highlighted diffs
-- `difft` - Structural diff
-- `git_diff` - Git diff with highlighting
+| Tool | Description |
+|------|-------------|
+| `delta` | Syntax-highlighted diffs |
+| `difft` | Structural diff |
+| `git_diff` | Git diff with highlighting |
 
 ### Utilities
-- `tldr` - Command cheatsheets
-- `grex` - Regex generator
-- `navi` - Cheatsheet search
-- `ouch_compress/decompress/list` - Archive handling
-- `pueue_add/status/log` - Task queue
+| Tool | Description |
+|------|-------------|
+| `tldr` | Command cheatsheets |
+| `grex` | Regex generator |
+| `ouch_*` | Archive handling |
+| `pueue_*` | Task queue |
 
 ## Installation
 

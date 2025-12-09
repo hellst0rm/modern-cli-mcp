@@ -1,4 +1,5 @@
 // modern-cli-mcp/src/main.rs
+// Test comment for pre-commit hook verification
 mod tools;
 
 use anyhow::Result;

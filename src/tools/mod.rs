@@ -558,6 +558,454 @@ pub struct NaviRequest {
 }
 
 // ============================================================================
+// GIT FORGE TOOLS
+// ============================================================================
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhRepoRequest {
+    #[schemars(description = "Subcommand: list, view, clone, create, fork, delete")]
+    pub command: String,
+    #[schemars(description = "Repository in owner/repo format")]
+    pub repo: Option<String>,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhIssueRequest {
+    #[schemars(description = "Subcommand: list, view, create, close, reopen, edit, comment")]
+    pub command: String,
+    #[schemars(description = "Repository in owner/repo format (uses current repo if omitted)")]
+    pub repo: Option<String>,
+    #[schemars(description = "Issue number (for view, close, reopen, edit, comment)")]
+    pub number: Option<u32>,
+    #[schemars(description = "Issue title (for create)")]
+    pub title: Option<String>,
+    #[schemars(description = "Issue body (for create, edit, comment)")]
+    pub body: Option<String>,
+    #[schemars(description = "Labels (comma-separated)")]
+    pub labels: Option<String>,
+    #[schemars(description = "Assignees (comma-separated)")]
+    pub assignees: Option<String>,
+    #[schemars(description = "State filter: open, closed, all (for list)")]
+    pub state: Option<String>,
+    #[schemars(description = "Maximum results (for list)")]
+    pub limit: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhPrRequest {
+    #[schemars(
+        description = "Subcommand: list, view, create, close, reopen, merge, checkout, diff, checks"
+    )]
+    pub command: String,
+    #[schemars(description = "Repository in owner/repo format")]
+    pub repo: Option<String>,
+    #[schemars(description = "PR number")]
+    pub number: Option<u32>,
+    #[schemars(description = "PR title (for create)")]
+    pub title: Option<String>,
+    #[schemars(description = "PR body (for create)")]
+    pub body: Option<String>,
+    #[schemars(description = "Base branch (for create)")]
+    pub base: Option<String>,
+    #[schemars(description = "Head branch (for create)")]
+    pub head: Option<String>,
+    #[schemars(description = "State filter: open, closed, merged, all")]
+    pub state: Option<String>,
+    #[schemars(description = "Maximum results")]
+    pub limit: Option<u32>,
+    #[schemars(description = "Merge method: merge, squash, rebase")]
+    pub merge_method: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhSearchRequest {
+    #[schemars(description = "Search type: repos, issues, prs, code, commits")]
+    pub search_type: String,
+    #[schemars(description = "Search query")]
+    pub query: String,
+    #[schemars(description = "Maximum results")]
+    pub limit: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhReleaseRequest {
+    #[schemars(description = "Subcommand: list, view, create, delete, download")]
+    pub command: String,
+    #[schemars(description = "Repository in owner/repo format")]
+    pub repo: Option<String>,
+    #[schemars(description = "Release tag")]
+    pub tag: Option<String>,
+    #[schemars(description = "Release title")]
+    pub title: Option<String>,
+    #[schemars(description = "Release notes")]
+    pub notes: Option<String>,
+    #[schemars(description = "Mark as draft")]
+    pub draft: Option<bool>,
+    #[schemars(description = "Mark as prerelease")]
+    pub prerelease: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhWorkflowRequest {
+    #[schemars(description = "Subcommand: list, view, run, disable, enable")]
+    pub command: String,
+    #[schemars(description = "Repository in owner/repo format")]
+    pub repo: Option<String>,
+    #[schemars(description = "Workflow ID or filename")]
+    pub workflow: Option<String>,
+    #[schemars(description = "Branch to run workflow on")]
+    pub ref_branch: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhRunRequest {
+    #[schemars(description = "Subcommand: list, view, watch, download, rerun, cancel")]
+    pub command: String,
+    #[schemars(description = "Repository in owner/repo format")]
+    pub repo: Option<String>,
+    #[schemars(description = "Run ID")]
+    pub run_id: Option<u64>,
+    #[schemars(description = "Workflow filter")]
+    pub workflow: Option<String>,
+    #[schemars(description = "Status filter: queued, in_progress, completed")]
+    pub status: Option<String>,
+    #[schemars(description = "Maximum results")]
+    pub limit: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GhApiRequest {
+    #[schemars(description = "API endpoint (e.g., /repos/{owner}/{repo})")]
+    pub endpoint: String,
+    #[schemars(description = "HTTP method: GET, POST, PUT, PATCH, DELETE")]
+    pub method: Option<String>,
+    #[schemars(description = "Request body as JSON")]
+    pub body: Option<String>,
+    #[schemars(description = "jq filter for response")]
+    pub jq_filter: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GlabIssueRequest {
+    #[schemars(description = "Subcommand: list, view, create, close, reopen")]
+    pub command: String,
+    #[schemars(description = "Project path (group/project)")]
+    pub project: Option<String>,
+    #[schemars(description = "Issue IID")]
+    pub iid: Option<u32>,
+    #[schemars(description = "Issue title")]
+    pub title: Option<String>,
+    #[schemars(description = "Issue description")]
+    pub description: Option<String>,
+    #[schemars(description = "Labels (comma-separated)")]
+    pub labels: Option<String>,
+    #[schemars(description = "State filter: opened, closed, all")]
+    pub state: Option<String>,
+    #[schemars(description = "Maximum results")]
+    pub per_page: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GlabMrRequest {
+    #[schemars(description = "Subcommand: list, view, create, close, reopen, merge, approve")]
+    pub command: String,
+    #[schemars(description = "Project path")]
+    pub project: Option<String>,
+    #[schemars(description = "MR IID")]
+    pub iid: Option<u32>,
+    #[schemars(description = "MR title")]
+    pub title: Option<String>,
+    #[schemars(description = "MR description")]
+    pub description: Option<String>,
+    #[schemars(description = "Source branch")]
+    pub source_branch: Option<String>,
+    #[schemars(description = "Target branch")]
+    pub target_branch: Option<String>,
+    #[schemars(description = "State filter: opened, closed, merged, all")]
+    pub state: Option<String>,
+    #[schemars(description = "Maximum results")]
+    pub per_page: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GlabPipelineRequest {
+    #[schemars(description = "Subcommand: list, view, run, cancel, retry, delete")]
+    pub command: String,
+    #[schemars(description = "Project path")]
+    pub project: Option<String>,
+    #[schemars(description = "Pipeline ID")]
+    pub pipeline_id: Option<u64>,
+    #[schemars(description = "Branch/ref to run pipeline on")]
+    pub ref_name: Option<String>,
+    #[schemars(description = "Status filter: running, pending, success, failed")]
+    pub status: Option<String>,
+}
+
+// ============================================================================
+// DATA TRANSFORMATION TOOLS
+// ============================================================================
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct GronRequest {
+    #[schemars(description = "JSON input to transform")]
+    pub input: String,
+    #[schemars(description = "Ungron mode (convert back to JSON)")]
+    pub ungron: Option<bool>,
+    #[schemars(description = "Stream mode for large inputs")]
+    pub stream: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct HtmlqRequest {
+    #[schemars(description = "HTML input")]
+    pub input: String,
+    #[schemars(description = "CSS selector")]
+    pub selector: String,
+    #[schemars(description = "Extract attribute value")]
+    pub attribute: Option<String>,
+    #[schemars(description = "Extract text content only")]
+    pub text: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct PupRequest {
+    #[schemars(description = "HTML input")]
+    pub input: String,
+    #[schemars(description = "CSS selector with optional display filter (e.g., 'a attr{href}')")]
+    pub selector: String,
+    #[schemars(description = "Output as JSON")]
+    pub json: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct MillerRequest {
+    #[schemars(
+        description = "Miller verb: cat, cut, head, tail, sort, filter, put, stats1, uniq, join"
+    )]
+    pub verb: String,
+    #[schemars(description = "Input data")]
+    pub input: String,
+    #[schemars(description = "Input format: json, csv, dkvp, nidx, pprint, xtab")]
+    pub input_format: Option<String>,
+    #[schemars(description = "Output format: json, csv, dkvp, pprint, markdown")]
+    pub output_format: Option<String>,
+    #[schemars(description = "Additional arguments (e.g., '-f field1,field2' for cut)")]
+    pub args: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct DaselRequest {
+    #[schemars(description = "Selector query (e.g., '.users.[0].name')")]
+    pub selector: String,
+    #[schemars(description = "Input data")]
+    pub input: String,
+    #[schemars(description = "Input format: json, yaml, toml, xml, csv")]
+    pub input_format: Option<String>,
+    #[schemars(description = "Output format: json, yaml, toml, xml, csv, plain")]
+    pub output_format: Option<String>,
+    #[schemars(description = "Compact output (no pretty print)")]
+    pub compact: Option<bool>,
+}
+
+// ============================================================================
+// CONTAINER TOOLS
+// ============================================================================
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct PodmanRequest {
+    #[schemars(
+        description = "Podman subcommand: ps, images, inspect, logs, pull, run, stop, rm, rmi, build"
+    )]
+    pub command: String,
+    #[schemars(description = "Container/image name or ID")]
+    pub target: Option<String>,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+    #[schemars(description = "Show all (for ps, images)")]
+    pub all: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct DiveRequest {
+    #[schemars(description = "Image to analyze")]
+    pub image: String,
+    #[schemars(description = "CI mode - check efficiency")]
+    pub ci: Option<bool>,
+    #[schemars(description = "Export JSON report")]
+    pub json: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct SkopeoRequest {
+    #[schemars(description = "Subcommand: inspect, copy, delete, list-tags, sync")]
+    pub command: String,
+    #[schemars(description = "Source image reference (e.g., docker://alpine:latest)")]
+    pub source: String,
+    #[schemars(description = "Destination image reference (for copy, sync)")]
+    pub dest: Option<String>,
+    #[schemars(description = "Don't verify TLS")]
+    pub insecure: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct CraneRequest {
+    #[schemars(description = "Subcommand: digest, manifest, config, ls, pull, push, copy, tag")]
+    pub command: String,
+    #[schemars(description = "Image reference")]
+    pub image: String,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct TrivyRequest {
+    #[schemars(description = "Scan type: image, fs, repo, config")]
+    pub scan_type: String,
+    #[schemars(description = "Target to scan (image name, path, or repo URL)")]
+    pub target: String,
+    #[schemars(description = "Severity filter: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")]
+    pub severity: Option<String>,
+    #[schemars(description = "Output format: table, json, sarif")]
+    pub format: Option<String>,
+    #[schemars(description = "Ignore unfixed vulnerabilities")]
+    pub ignore_unfixed: Option<bool>,
+}
+
+// ============================================================================
+// KUBERNETES TOOLS
+// ============================================================================
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KubectlGetRequest {
+    #[schemars(
+        description = "Resource type: pods, deployments, services, configmaps, secrets, nodes, namespaces, events"
+    )]
+    pub resource: String,
+    #[schemars(description = "Resource name (optional, lists all if omitted)")]
+    pub name: Option<String>,
+    #[schemars(description = "Namespace (default: current)")]
+    pub namespace: Option<String>,
+    #[schemars(description = "All namespaces")]
+    pub all_namespaces: Option<bool>,
+    #[schemars(description = "Label selector (e.g., 'app=nginx')")]
+    pub selector: Option<String>,
+    #[schemars(description = "Output format: json, yaml, wide, name")]
+    pub output: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KubectlDescribeRequest {
+    #[schemars(description = "Resource type")]
+    pub resource: String,
+    #[schemars(description = "Resource name")]
+    pub name: String,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KubectlLogsRequest {
+    #[schemars(description = "Pod name")]
+    pub pod: String,
+    #[schemars(description = "Container name (if multiple containers)")]
+    pub container: Option<String>,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+    #[schemars(description = "Number of lines to show")]
+    pub tail: Option<u32>,
+    #[schemars(description = "Show previous container logs")]
+    pub previous: Option<bool>,
+    #[schemars(description = "Show logs since duration (e.g., '1h', '5m')")]
+    pub since: Option<String>,
+    #[schemars(description = "Include timestamps")]
+    pub timestamps: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KubectlApplyRequest {
+    #[schemars(description = "YAML/JSON manifest content")]
+    pub manifest: String,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+    #[schemars(description = "Dry run mode: none, client, server")]
+    pub dry_run: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KubectlDeleteRequest {
+    #[schemars(description = "Resource type")]
+    pub resource: String,
+    #[schemars(description = "Resource name")]
+    pub name: String,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+    #[schemars(description = "Force deletion")]
+    pub force: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KubectlExecRequest {
+    #[schemars(description = "Pod name")]
+    pub pod: String,
+    #[schemars(description = "Command to execute")]
+    pub command: String,
+    #[schemars(description = "Container name")]
+    pub container: Option<String>,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct SternRequest {
+    #[schemars(description = "Pod query (regex or exact match)")]
+    pub query: String,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+    #[schemars(description = "Container name filter (regex)")]
+    pub container: Option<String>,
+    #[schemars(description = "Show logs since duration")]
+    pub since: Option<String>,
+    #[schemars(description = "Label selector")]
+    pub selector: Option<String>,
+    #[schemars(description = "Output format: default, raw, json")]
+    pub output: Option<String>,
+    #[schemars(description = "Include timestamps")]
+    pub timestamps: Option<bool>,
+    #[schemars(description = "Maximum log lines per container")]
+    pub tail: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct HelmRequest {
+    #[schemars(
+        description = "Helm subcommand: list, status, get, install, upgrade, uninstall, search, show, repo"
+    )]
+    pub command: String,
+    #[schemars(description = "Release name")]
+    pub release: Option<String>,
+    #[schemars(description = "Chart reference (for install/upgrade/show)")]
+    pub chart: Option<String>,
+    #[schemars(description = "Namespace")]
+    pub namespace: Option<String>,
+    #[schemars(description = "Values file path or inline YAML")]
+    pub values: Option<String>,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct KustomizeRequest {
+    #[schemars(description = "Subcommand: build, edit, create")]
+    pub command: String,
+    #[schemars(description = "Path to kustomization directory")]
+    pub path: Option<String>,
+    #[schemars(description = "Output format: yaml, json")]
+    pub output: Option<String>,
+}
+
+// ============================================================================
 // TOOL IMPLEMENTATIONS
 // ============================================================================
 
@@ -1892,6 +2340,1114 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("navi", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    // ========================================================================
+    // GIT FORGE TOOLS (GitHub)
+    // ========================================================================
+
+    #[tool(description = "GitHub repository operations via gh CLI. \
+        Returns JSON for structured data. Subcommands: list, view, clone, create, fork, delete.")]
+    async fn gh_repo(
+        &self,
+        Parameters(req): Parameters<GhRepoRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["repo".into(), req.command.clone()];
+
+        // JSON output for list/view
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--json".into());
+            args.push(
+                "name,owner,description,url,isPrivate,isFork,stargazerCount,forkCount,updatedAt"
+                    .into(),
+            );
+        }
+
+        if let Some(ref repo) = req.repo {
+            args.push(repo.clone());
+        }
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitHub issue operations. Returns JSON. \
+        Subcommands: list, view, create, close, reopen, edit, comment.")]
+    async fn gh_issue(
+        &self,
+        Parameters(req): Parameters<GhIssueRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["issue".into(), req.command.clone()];
+
+        // JSON output for list/view
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--json".into());
+            args.push(
+                "number,title,state,author,assignees,labels,body,createdAt,updatedAt,url".into(),
+            );
+        }
+
+        if let Some(ref repo) = req.repo {
+            args.push("-R".into());
+            args.push(repo.clone());
+        }
+        if let Some(number) = req.number {
+            args.push(number.to_string());
+        }
+        if let Some(ref title) = req.title {
+            args.push("--title".into());
+            args.push(title.clone());
+        }
+        if let Some(ref body) = req.body {
+            args.push("--body".into());
+            args.push(body.clone());
+        }
+        if let Some(ref labels) = req.labels {
+            args.push("--label".into());
+            args.push(labels.clone());
+        }
+        if let Some(ref assignees) = req.assignees {
+            args.push("--assignee".into());
+            args.push(assignees.clone());
+        }
+        if let Some(ref state) = req.state {
+            args.push("--state".into());
+            args.push(state.clone());
+        }
+        if let Some(limit) = req.limit {
+            args.push("--limit".into());
+            args.push(limit.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitHub pull request operations. Returns JSON. \
+        Subcommands: list, view, create, close, reopen, merge, checkout, diff, checks.")]
+    async fn gh_pr(
+        &self,
+        Parameters(req): Parameters<GhPrRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["pr".into(), req.command.clone()];
+
+        // JSON output for list/view/checks
+        if matches!(req.command.as_str(), "list" | "view" | "checks") {
+            args.push("--json".into());
+            if req.command == "checks" {
+                args.push("name,state,conclusion,startedAt,completedAt,detailsUrl".into());
+            } else {
+                args.push("number,title,state,author,headRefName,baseRefName,mergeable,additions,deletions,url,createdAt".into());
+            }
+        }
+
+        if let Some(ref repo) = req.repo {
+            args.push("-R".into());
+            args.push(repo.clone());
+        }
+        if let Some(number) = req.number {
+            args.push(number.to_string());
+        }
+        if let Some(ref title) = req.title {
+            args.push("--title".into());
+            args.push(title.clone());
+        }
+        if let Some(ref body) = req.body {
+            args.push("--body".into());
+            args.push(body.clone());
+        }
+        if let Some(ref base) = req.base {
+            args.push("--base".into());
+            args.push(base.clone());
+        }
+        if let Some(ref head) = req.head {
+            args.push("--head".into());
+            args.push(head.clone());
+        }
+        if let Some(ref state) = req.state {
+            args.push("--state".into());
+            args.push(state.clone());
+        }
+        if let Some(limit) = req.limit {
+            args.push("--limit".into());
+            args.push(limit.to_string());
+        }
+        if let Some(ref method) = req.merge_method {
+            args.push(format!("--{}", method));
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitHub search across repos, issues, PRs, code, commits. Returns JSON.")]
+    async fn gh_search(
+        &self,
+        Parameters(req): Parameters<GhSearchRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["search".into(), req.search_type.clone()];
+
+        args.push(req.query.clone());
+        args.push("--json".into());
+
+        // Different fields based on search type
+        match req.search_type.as_str() {
+            "repos" => args.push("name,owner,description,stars,forks,url".into()),
+            "issues" | "prs" => {
+                args.push("number,title,state,author,repository,url,createdAt".into())
+            }
+            "code" => args.push("path,repository,textMatches".into()),
+            "commits" => args.push("sha,message,author,repository,url".into()),
+            _ => args.push("*".into()),
+        }
+
+        if let Some(limit) = req.limit {
+            args.push("--limit".into());
+            args.push(limit.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitHub release operations. Returns JSON for list/view.")]
+    async fn gh_release(
+        &self,
+        Parameters(req): Parameters<GhReleaseRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["release".into(), req.command.clone()];
+
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--json".into());
+            args.push("tagName,name,isDraft,isPrerelease,createdAt,publishedAt,url,assets".into());
+        }
+
+        if let Some(ref repo) = req.repo {
+            args.push("-R".into());
+            args.push(repo.clone());
+        }
+        if let Some(ref tag) = req.tag {
+            args.push(tag.clone());
+        }
+        if let Some(ref title) = req.title {
+            args.push("--title".into());
+            args.push(title.clone());
+        }
+        if let Some(ref notes) = req.notes {
+            args.push("--notes".into());
+            args.push(notes.clone());
+        }
+        if req.draft.unwrap_or(false) {
+            args.push("--draft".into());
+        }
+        if req.prerelease.unwrap_or(false) {
+            args.push("--prerelease".into());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitHub Actions workflow operations. Returns JSON.")]
+    async fn gh_workflow(
+        &self,
+        Parameters(req): Parameters<GhWorkflowRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["workflow".into(), req.command.clone()];
+
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--json".into());
+            args.push("id,name,state,path".into());
+        }
+
+        if let Some(ref repo) = req.repo {
+            args.push("-R".into());
+            args.push(repo.clone());
+        }
+        if let Some(ref workflow) = req.workflow {
+            args.push(workflow.clone());
+        }
+        if let Some(ref ref_branch) = req.ref_branch {
+            args.push("--ref".into());
+            args.push(ref_branch.clone());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitHub Actions workflow run operations. Returns JSON.")]
+    async fn gh_run(
+        &self,
+        Parameters(req): Parameters<GhRunRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["run".into(), req.command.clone()];
+
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--json".into());
+            args.push(
+                "databaseId,workflowName,status,conclusion,headBranch,event,createdAt,url".into(),
+            );
+        }
+
+        if let Some(ref repo) = req.repo {
+            args.push("-R".into());
+            args.push(repo.clone());
+        }
+        if let Some(run_id) = req.run_id {
+            args.push(run_id.to_string());
+        }
+        if let Some(ref workflow) = req.workflow {
+            args.push("--workflow".into());
+            args.push(workflow.clone());
+        }
+        if let Some(ref status) = req.status {
+            args.push("--status".into());
+            args.push(status.clone());
+        }
+        if let Some(limit) = req.limit {
+            args.push("--limit".into());
+            args.push(limit.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Direct GitHub API access. Returns JSON. \
+        Supports any API endpoint with optional jq filtering.")]
+    async fn gh_api(
+        &self,
+        Parameters(req): Parameters<GhApiRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["api".into()];
+
+        if let Some(ref method) = req.method {
+            args.push("-X".into());
+            args.push(method.clone());
+        }
+        if let Some(ref body) = req.body {
+            args.push("-f".into());
+            args.push(body.clone());
+        }
+        if let Some(ref jq) = req.jq_filter {
+            args.push("--jq".into());
+            args.push(jq.clone());
+        }
+
+        args.push(req.endpoint.clone());
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("gh", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    // ========================================================================
+    // GIT FORGE TOOLS (GitLab)
+    // ========================================================================
+
+    #[tool(description = "GitLab issue operations via glab CLI. \
+        Subcommands: list, view, create, close, reopen.")]
+    async fn glab_issue(
+        &self,
+        Parameters(req): Parameters<GlabIssueRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["issue".into(), req.command.clone()];
+
+        // JSON output for list/view
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--output".into());
+            args.push("json".into());
+        }
+
+        if let Some(ref project) = req.project {
+            args.push("--repo".into());
+            args.push(project.clone());
+        }
+        if let Some(iid) = req.iid {
+            args.push(iid.to_string());
+        }
+        if let Some(ref title) = req.title {
+            args.push("--title".into());
+            args.push(title.clone());
+        }
+        if let Some(ref desc) = req.description {
+            args.push("--description".into());
+            args.push(desc.clone());
+        }
+        if let Some(ref labels) = req.labels {
+            args.push("--label".into());
+            args.push(labels.clone());
+        }
+        if let Some(ref state) = req.state {
+            args.push("--state".into());
+            args.push(state.clone());
+        }
+        if let Some(per_page) = req.per_page {
+            args.push("--per-page".into());
+            args.push(per_page.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("glab", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitLab merge request operations. \
+        Subcommands: list, view, create, close, reopen, merge, approve.")]
+    async fn glab_mr(
+        &self,
+        Parameters(req): Parameters<GlabMrRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["mr".into(), req.command.clone()];
+
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--output".into());
+            args.push("json".into());
+        }
+
+        if let Some(ref project) = req.project {
+            args.push("--repo".into());
+            args.push(project.clone());
+        }
+        if let Some(iid) = req.iid {
+            args.push(iid.to_string());
+        }
+        if let Some(ref title) = req.title {
+            args.push("--title".into());
+            args.push(title.clone());
+        }
+        if let Some(ref desc) = req.description {
+            args.push("--description".into());
+            args.push(desc.clone());
+        }
+        if let Some(ref source) = req.source_branch {
+            args.push("--source-branch".into());
+            args.push(source.clone());
+        }
+        if let Some(ref target) = req.target_branch {
+            args.push("--target-branch".into());
+            args.push(target.clone());
+        }
+        if let Some(ref state) = req.state {
+            args.push("--state".into());
+            args.push(state.clone());
+        }
+        if let Some(per_page) = req.per_page {
+            args.push("--per-page".into());
+            args.push(per_page.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("glab", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "GitLab CI/CD pipeline operations. \
+        Subcommands: list, view, run, cancel, retry, delete.")]
+    async fn glab_pipeline(
+        &self,
+        Parameters(req): Parameters<GlabPipelineRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["pipeline".into(), req.command.clone()];
+
+        if matches!(req.command.as_str(), "list" | "view") {
+            args.push("--output".into());
+            args.push("json".into());
+        }
+
+        if let Some(ref project) = req.project {
+            args.push("--repo".into());
+            args.push(project.clone());
+        }
+        if let Some(pipeline_id) = req.pipeline_id {
+            args.push(pipeline_id.to_string());
+        }
+        if let Some(ref ref_name) = req.ref_name {
+            args.push("--ref".into());
+            args.push(ref_name.clone());
+        }
+        if let Some(ref status) = req.status {
+            args.push("--status".into());
+            args.push(status.clone());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("glab", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    // ========================================================================
+    // DATA TRANSFORMATION TOOLS
+    // ========================================================================
+
+    #[tool(description = "Transform JSON to greppable format with gron. \
+        Makes JSON amenable to grep. Use ungron to convert back.")]
+    async fn gron(
+        &self,
+        Parameters(req): Parameters<GronRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![];
+
+        if req.ungron.unwrap_or(false) {
+            args.push("--ungron".into());
+        }
+        if req.stream.unwrap_or(false) {
+            args.push("--stream".into());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self
+            .executor
+            .run_with_stdin("gron", &args_ref, &req.input)
+            .await
+        {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(
+        description = "Query HTML with CSS selectors using htmlq (jq for HTML). \
+        Extract elements, attributes, or text content."
+    )]
+    async fn htmlq(
+        &self,
+        Parameters(req): Parameters<HtmlqRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![];
+
+        if req.text.unwrap_or(false) {
+            args.push("--text".into());
+        }
+        if let Some(ref attr) = req.attribute {
+            args.push("--attribute".into());
+            args.push(attr.clone());
+        }
+
+        args.push(req.selector.clone());
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self
+            .executor
+            .run_with_stdin("htmlq", &args_ref, &req.input)
+            .await
+        {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Parse HTML with CSS selectors using pup. \
+        Supports display filters like 'a attr{href}' or 'div text{}'.")]
+    async fn pup(
+        &self,
+        Parameters(req): Parameters<PupRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![];
+
+        if req.json.unwrap_or(true) {
+            args.push("--json".into());
+        }
+
+        args.push(req.selector.clone());
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self
+            .executor
+            .run_with_stdin("pup", &args_ref, &req.input)
+            .await
+        {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Process structured data with miller (mlr). \
+        Like awk but for CSV, JSON, and other formats. Returns JSON by default.")]
+    async fn miller(
+        &self,
+        Parameters(req): Parameters<MillerRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let input_fmt = req.input_format.as_deref().unwrap_or("json");
+        let output_fmt = req.output_format.as_deref().unwrap_or("json");
+
+        let mut args: Vec<String> = vec![
+            format!("--i{}", input_fmt),
+            format!("--o{}", output_fmt),
+            req.verb.clone(),
+        ];
+
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self
+            .executor
+            .run_with_stdin("mlr", &args_ref, &req.input)
+            .await
+        {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(
+        description = "Query JSON/YAML/TOML/XML with dasel (universal selector). \
+        Single tool for multiple data formats. Returns JSON by default."
+    )]
+    async fn dasel(
+        &self,
+        Parameters(req): Parameters<DaselRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let input_fmt = req.input_format.as_deref().unwrap_or("json");
+        let output_fmt = req.output_format.as_deref().unwrap_or("json");
+
+        let mut args: Vec<String> = vec![
+            format!("-p{}", input_fmt),
+            format!("-w{}", output_fmt),
+            req.selector.clone(),
+        ];
+
+        if req.compact.unwrap_or(false) {
+            args.push("-c".into());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self
+            .executor
+            .run_with_stdin("dasel", &args_ref, &req.input)
+            .await
+        {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    // ========================================================================
+    // CONTAINER TOOLS
+    // ========================================================================
+
+    #[tool(
+        description = "Podman container operations. Returns JSON for inspect, ps, images. \
+        Subcommands: ps, images, inspect, logs, pull, run, stop, rm, rmi, build."
+    )]
+    async fn podman(
+        &self,
+        Parameters(req): Parameters<PodmanRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![req.command.clone()];
+
+        // JSON output for inspection commands
+        if matches!(req.command.as_str(), "inspect" | "ps" | "images") {
+            args.push("--format=json".into());
+        }
+
+        if req.all.unwrap_or(false) && matches!(req.command.as_str(), "ps" | "images") {
+            args.push("-a".into());
+        }
+
+        if let Some(ref target) = req.target {
+            args.push(target.clone());
+        }
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("podman", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Analyze container image layers with dive. \
+        CI mode returns efficiency score. JSON mode exports full analysis.")]
+    async fn dive(
+        &self,
+        Parameters(req): Parameters<DiveRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![];
+
+        if req.ci.unwrap_or(true) {
+            args.push("--ci".into());
+        }
+        if req.json.unwrap_or(false) {
+            args.push("--json".into());
+            args.push("/dev/stdout".into());
+        }
+
+        args.push(req.image.clone());
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("dive", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Container registry operations with skopeo. \
+        Inspect images without pulling, copy between registries. Returns JSON for inspect.")]
+    async fn skopeo(
+        &self,
+        Parameters(req): Parameters<SkopeoRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![req.command.clone()];
+
+        if req.insecure.unwrap_or(false) {
+            args.push("--tls-verify=false".into());
+        }
+
+        args.push(req.source.clone());
+
+        if let Some(ref dest) = req.dest {
+            args.push(dest.clone());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("skopeo", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Low-level container registry operations with crane. \
+        Get digests, manifests, configs, list tags. Returns JSON.")]
+    async fn crane(
+        &self,
+        Parameters(req): Parameters<CraneRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![req.command.clone()];
+
+        args.push(req.image.clone());
+
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("crane", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Security vulnerability scanner with trivy. \
+        Scan images, filesystems, repos, configs. Returns JSON by default.")]
+    async fn trivy(
+        &self,
+        Parameters(req): Parameters<TrivyRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let format = req.format.as_deref().unwrap_or("json");
+
+        let mut args: Vec<String> = vec![
+            req.scan_type.clone(),
+            "--format".into(),
+            format.into(),
+            "--quiet".into(),
+        ];
+
+        if let Some(ref severity) = req.severity {
+            args.push("--severity".into());
+            args.push(severity.clone());
+        }
+        if req.ignore_unfixed.unwrap_or(false) {
+            args.push("--ignore-unfixed".into());
+        }
+
+        args.push(req.target.clone());
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("trivy", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    // ========================================================================
+    // KUBERNETES TOOLS
+    // ========================================================================
+
+    #[tool(
+        description = "Get Kubernetes resources. Returns JSON by default for AI parsing. \
+        Resources: pods, deployments, services, configmaps, secrets, nodes, events."
+    )]
+    async fn kubectl_get(
+        &self,
+        Parameters(req): Parameters<KubectlGetRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let output_fmt = req.output.as_deref().unwrap_or("json");
+
+        let mut args: Vec<String> = vec!["get".into(), req.resource.clone()];
+
+        args.push("-o".into());
+        args.push(output_fmt.into());
+
+        if let Some(ref name) = req.name {
+            args.push(name.clone());
+        }
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+        if req.all_namespaces.unwrap_or(false) {
+            args.push("-A".into());
+        }
+        if let Some(ref selector) = req.selector {
+            args.push("-l".into());
+            args.push(selector.clone());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("kubectl", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Describe Kubernetes resource in detail. Returns human-readable text.")]
+    async fn kubectl_describe(
+        &self,
+        Parameters(req): Parameters<KubectlDescribeRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["describe".into(), req.resource.clone(), req.name.clone()];
+
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("kubectl", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Get logs from a Kubernetes pod.")]
+    async fn kubectl_logs(
+        &self,
+        Parameters(req): Parameters<KubectlLogsRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["logs".into(), req.pod.clone()];
+
+        if let Some(ref container) = req.container {
+            args.push("-c".into());
+            args.push(container.clone());
+        }
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+        if let Some(tail) = req.tail {
+            args.push("--tail".into());
+            args.push(tail.to_string());
+        }
+        if req.previous.unwrap_or(false) {
+            args.push("--previous".into());
+        }
+        if let Some(ref since) = req.since {
+            args.push("--since".into());
+            args.push(since.clone());
+        }
+        if req.timestamps.unwrap_or(false) {
+            args.push("--timestamps".into());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("kubectl", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Apply Kubernetes manifest. Supports dry-run modes. \
+        Pass YAML/JSON content directly.")]
+    async fn kubectl_apply(
+        &self,
+        Parameters(req): Parameters<KubectlApplyRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["apply".into(), "-f".into(), "-".into()];
+
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+        if let Some(ref dry_run) = req.dry_run {
+            args.push(format!("--dry-run={}", dry_run));
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self
+            .executor
+            .run_with_stdin("kubectl", &args_ref, &req.manifest)
+            .await
+        {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Delete a Kubernetes resource.")]
+    async fn kubectl_delete(
+        &self,
+        Parameters(req): Parameters<KubectlDeleteRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["delete".into(), req.resource.clone(), req.name.clone()];
+
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+        if req.force.unwrap_or(false) {
+            args.push("--force".into());
+            args.push("--grace-period=0".into());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("kubectl", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Execute command in a Kubernetes pod container.")]
+    async fn kubectl_exec(
+        &self,
+        Parameters(req): Parameters<KubectlExecRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["exec".into(), req.pod.clone()];
+
+        if let Some(ref container) = req.container {
+            args.push("-c".into());
+            args.push(container.clone());
+        }
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+
+        args.push("--".into());
+        for part in req.command.split_whitespace() {
+            args.push(part.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("kubectl", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Multi-pod log tailing with stern. \
+        Aggregates logs from multiple pods matching a query. JSON output available.")]
+    async fn stern(
+        &self,
+        Parameters(req): Parameters<SternRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let output_fmt = req.output.as_deref().unwrap_or("json");
+
+        let mut args: Vec<String> = vec![
+            req.query.clone(),
+            "--output".into(),
+            output_fmt.into(),
+            "--no-follow".into(), // Non-interactive for MCP
+        ];
+
+        if let Some(ref ns) = req.namespace {
+            args.push("--namespace".into());
+            args.push(ns.clone());
+        }
+        if let Some(ref container) = req.container {
+            args.push("--container".into());
+            args.push(container.clone());
+        }
+        if let Some(ref since) = req.since {
+            args.push("--since".into());
+            args.push(since.clone());
+        }
+        if let Some(ref selector) = req.selector {
+            args.push("--selector".into());
+            args.push(selector.clone());
+        }
+        if req.timestamps.unwrap_or(false) {
+            args.push("--timestamps".into());
+        }
+        if let Some(tail) = req.tail {
+            args.push("--tail".into());
+            args.push(tail.to_string());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("stern", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Helm chart operations. Returns JSON for list/status. \
+        Subcommands: list, status, get, install, upgrade, uninstall, search, show, repo.")]
+    async fn helm(
+        &self,
+        Parameters(req): Parameters<HelmRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![req.command.clone()];
+
+        // JSON output for list/status
+        if matches!(req.command.as_str(), "list" | "status") {
+            args.push("-o".into());
+            args.push("json".into());
+        }
+
+        if let Some(ref release) = req.release {
+            args.push(release.clone());
+        }
+        if let Some(ref chart) = req.chart {
+            args.push(chart.clone());
+        }
+        if let Some(ref ns) = req.namespace {
+            args.push("-n".into());
+            args.push(ns.clone());
+        }
+        if let Some(ref values) = req.values {
+            args.push("-f".into());
+            args.push(values.clone());
+        }
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("helm", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(description = "Build and manage Kubernetes manifests with kustomize. \
+        Build outputs YAML/JSON for applying to cluster.")]
+    async fn kustomize(
+        &self,
+        Parameters(req): Parameters<KustomizeRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![req.command.clone()];
+
+        if let Some(ref path) = req.path {
+            args.push(path.clone());
+        }
+        if let Some(ref output) = req.output {
+            args.push("-o".into());
+            args.push(output.clone());
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("kustomize", &args_ref).await {
             Ok(output) => Ok(CallToolResult::success(vec![Content::text(
                 output.to_result_string(),
             )])),

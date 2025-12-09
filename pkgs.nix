@@ -1,7 +1,7 @@
 # pkgs.nix
 { pkgs }:
 {
-  devTools = with pkgs; [
+  rustTools = with pkgs; [
     # Rust toolchain
     rust-bin.stable.latest.default
     rust-analyzer
@@ -10,6 +10,17 @@
 
     # Nix tools
     nixfmt-rfc-style
+  ];
+
+  webTools = with pkgs; [
+    # Runtime
+    bun
+
+    # Node ecosystem (for compatibility)
+    nodejs_22
+
+    # Formatting/Linting
+    biome
   ];
 
   cliTools = with pkgs; [
@@ -33,6 +44,13 @@
     qsv
     hck
 
+    # Data transformation (AI-optimized)
+    gron # JSON→greppable, JSON output
+    htmlq # jq for HTML
+    pup # CSS selectors for HTML
+    miller # Multi-format processor (JSON/CSV/etc)
+    dasel # Universal data selector
+
     # System
     procs
     tokei
@@ -42,6 +60,24 @@
     xh
     doggo
     usql
+    curlie # curl with better output
+
+    # Git forges
+    gh # GitHub CLI
+    glab # GitLab CLI
+
+    # Containers
+    podman # Rootless containers
+    dive # Image layer analysis
+    skopeo # Registry operations
+    crane # Low-level registry tool
+    trivy # Security scanner
+
+    # Kubernetes
+    kubectl # K8s CLI
+    kubernetes-helm # Helm charts
+    stern # Multi-pod logs
+    kustomize # Manifest building
 
     # Diff/Git
     delta
