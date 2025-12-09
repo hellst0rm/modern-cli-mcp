@@ -1,0 +1,18 @@
+# Dockerfile.prebuilt
+# Fast Docker build using pre-built Nix closure from CI artifact
+# This avoids rebuilding Nix inside Docker (~15 min → <1 min)
+
+FROM debian:bookworm-slim
+
+# Install minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy pre-built Nix closure (all tools included)
+COPY dist/ /app/
+
+# Set PATH to include all bundled tools
+ENV PATH="/app/bin:${PATH}"
+
+ENTRYPOINT ["/app/bin/modern-cli-mcp"]

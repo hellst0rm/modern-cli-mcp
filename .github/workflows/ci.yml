@@ -41,7 +41,7 @@ permissions:
   contents: read
 
 jobs:
-  # Build first to populate the cache
+  # Build first - populates cache and exports artifacts for other jobs
   build:
     runs-on: ubuntu-latest
     steps:
@@ -56,19 +56,32 @@ jobs:
       - name: Build flake
         run: |
           nix flake check --accept-flake-config
-          nix build
+          nix build .#full
+
+      - name: Export Nix closure
+        run: |
+          mkdir -p dist
+          cp -rL ./result/* dist/
 
       - name: Test binary
         run: |
-          timeout 5s ./result/bin/modern-cli-mcp --help || true
+          timeout 5s dist/bin/modern-cli-mcp --help || true
 
-      - name: Upload artifact
+      - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: modern-cli-mcp-linux-x86_64
-          path: result/bin/modern-cli-mcp
+          name: modern-cli-mcp-binary
+          path: dist/bin/modern-cli-mcp
+          retention-days: 7
 
-  # Test runs after build - uses warm cache
+      - name: Upload full closure artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nix-closure
+          path: dist/
+          retention-days: 7
+
+  # Test runs after build - uses warm Nix cache
   test:
     runs-on: ubuntu-latest
     needs: [build]
@@ -93,10 +106,10 @@ jobs:
         run: |
           nix develop -c cargo fmt -- --check
 
-  # Docker build - after tests pass
+  # Docker build - uses pre-built artifact (fast!)
   docker:
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [build, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       packages: write
@@ -104,8 +117,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Download Nix closure artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nix-closure
+          path: dist/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -132,6 +148,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: Dockerfile.prebuilt
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
