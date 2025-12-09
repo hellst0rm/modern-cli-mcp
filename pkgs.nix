@@ -62,6 +62,9 @@
     usql
     curlie # curl with better output
 
+    # Web search
+    ddgr # DuckDuckGo CLI with JSON output
+
     # Git forges
     gh # GitHub CLI
     glab # GitLab CLI

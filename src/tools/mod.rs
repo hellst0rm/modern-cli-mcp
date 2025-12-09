@@ -385,6 +385,24 @@ pub struct UsqlRequest {
     pub format: Option<String>,
 }
 
+// --- Web Search ---
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct WebSearchRequest {
+    #[schemars(description = "Search query keywords")]
+    pub query: String,
+    #[schemars(description = "Number of results to return (0-25, default 10)")]
+    pub num_results: Option<u32>,
+    #[schemars(description = "Region for search (e.g., 'us-en', 'uk-en', 'de-de')")]
+    pub region: Option<String>,
+    #[schemars(description = "Time limit: d (day), w (week), m (month), y (year)")]
+    pub time: Option<String>,
+    #[schemars(description = "Limit search to a specific site")]
+    pub site: Option<String>,
+    #[schemars(description = "Show expanded URLs")]
+    pub expand_urls: Option<bool>,
+}
+
 // --- Utility ---
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
@@ -1877,6 +1895,52 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("usql", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    // ========================================================================
+    // WEB SEARCH TOOLS
+    // ========================================================================
+
+    #[tool(
+        description = "Search the web using DuckDuckGo. Returns JSON results with titles, URLs, and abstracts. \
+        Use for finding documentation, code examples, or general information."
+    )]
+    async fn web_search(
+        &self,
+        Parameters(req): Parameters<WebSearchRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![
+            "--json".into(),
+            "--np".into(), // no prompt, exit after results
+            "--nocolor".into(),
+        ];
+
+        if let Some(num) = req.num_results {
+            args.push(format!("--num={}", num.min(25)));
+        }
+        if let Some(ref region) = req.region {
+            args.push(format!("--reg={}", region));
+        }
+        if let Some(ref time) = req.time {
+            args.push(format!("--time={}", time));
+        }
+        if let Some(ref site) = req.site {
+            args.push(format!("--site={}", site));
+        }
+        if req.expand_urls.unwrap_or(false) {
+            args.push("--expand".into());
+        }
+
+        // Add the search query
+        args.push(req.query.clone());
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("ddgr", &args_ref).await {
             Ok(output) => Ok(CallToolResult::success(vec![Content::text(
                 output.to_result_string(),
             )])),

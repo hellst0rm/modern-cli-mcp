@@ -76,6 +76,7 @@ Add to your MCP configuration:
 | `rg` | Ripgrep for fast content search (JSON) |
 | `fzf_filter` | Fuzzy filtering |
 | `ast_grep` | AST-based code search (JSON) |
+| `web_search` | DuckDuckGo web search (JSON) |
 
 ### Git Forges
 | Tool | Description |
