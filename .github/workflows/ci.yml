@@ -41,29 +41,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: DeterminateSystems/determinate-nix-action@v3
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
-
-      - name: Run tests
-        run: |
-          nix develop -c cargo test
-
-      - name: Run clippy
-        run: |
-          nix develop -c cargo clippy -- -D warnings
-
-      - name: Check formatting
-        run: |
-          nix develop -c cargo fmt -- --check
-
+  # Build first to populate the cache
   build:
     runs-on: ubuntu-latest
     steps:
@@ -90,10 +68,35 @@ jobs:
           name: modern-cli-mcp-linux-x86_64
           path: result/bin/modern-cli-mcp
 
+  # Test runs after build - uses warm cache
+  test:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@v3
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Run tests
+        run: |
+          nix develop -c cargo test
+
+      - name: Run clippy
+        run: |
+          nix develop -c cargo clippy -- -D warnings
+
+      - name: Check formatting
+        run: |
+          nix develop -c cargo fmt -- --check
+
   # Docker build - after tests pass
   docker:
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       packages: write
