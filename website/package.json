@@ -1,0 +1,23 @@
+{
+  "name": "modern-cli-mcp-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "build": "bun build src/index.ts --outdir=dist --target=bun",
+    "start": "bun run dist/index.js",
+    "lint": "bunx @biomejs/biome check src/",
+    "format": "bunx @biomejs/biome format --write src/"
+  },
+  "dependencies": {
+    "elysia": "^1.2.0",
+    "@elysiajs/html": "^1.1.0",
+    "@elysiajs/static": "^1.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "@types/bun": "latest",
+    "unocss": "^0.65.0",
+    "@unocss/cli": "^0.65.0"
+  }
+}

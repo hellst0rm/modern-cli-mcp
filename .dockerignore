@@ -2,10 +2,12 @@
 target/
 result
 result-*
+dist/
 
 # Git
 .git/
 .gitignore
+.gitattributes
 
 # IDE/Editor
 .idea/
@@ -13,17 +15,38 @@ result-*
 *.swp
 *.swo
 *~
+*.code-workspace
 
 # Nix
 .direnv/
+.envrc
+.envrc.local
 
 # Documentation (not needed in image)
 *.md
-!README.md
+docs/
 
 # CI/CD
 .github/
 
+# Claude
+.claude/
+CLAUDE.md
+memory-bank/
+
+# Website (separate deployment)
+website/
+
 # Local config
-.envrc.local
 .mcp.json
+*.local
+
+# Editor config
+.editorconfig
+
+# Logs
+*.log
+
+# Test artifacts
+tests/
+*.test.*

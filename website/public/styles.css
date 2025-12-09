@@ -1,0 +1,99 @@
+/* website/public/styles.css */
+/* Base styles - UnoCSS will generate utility classes at build time */
+/* For development, include common utilities inline */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+}
+
+/* Utility classes (subset for development) */
+.bg-gray-900 { background-color: #111827; }
+.bg-gray-800 { background-color: #1f2937; }
+.bg-gray-700 { background-color: #374151; }
+.bg-cyan-600 { background-color: #0891b2; }
+.bg-cyan-500 { background-color: #06b6d4; }
+.bg-green-600 { background-color: #16a34a; }
+
+.text-gray-100 { color: #f3f4f6; }
+.text-gray-400 { color: #9ca3af; }
+.text-cyan-400 { color: #22d3ee; }
+
+.border-gray-700 { border-color: #374151; }
+.border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+.border-t { border-top-width: 1px; border-top-style: solid; }
+
+.min-h-screen { min-height: 100vh; }
+.h-16 { height: 4rem; }
+
+.container { width: 100%; max-width: 1280px; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mb-12 { margin-bottom: 3rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-16 { margin-top: 4rem; }
+
+.flex { display: flex; }
+.grid { display: grid; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.flex-wrap { flex-wrap: wrap; }
+
+.text-center { text-align: center; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+.text-5xl { font-size: 3rem; line-height: 1; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+
+.rounded { border-radius: 0.25rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.overflow-x-auto { overflow-x: auto; }
+
+.max-w-2xl { max-width: 42rem; }
+.max-w-4xl { max-width: 56rem; }
+
+.transition { transition-property: color, background-color, border-color; transition-duration: 150ms; }
+.hover\:text-cyan-400:hover { color: #22d3ee; }
+.hover\:bg-cyan-500:hover { background-color: #06b6d4; }
+.hover\:bg-gray-600:hover { background-color: #4b5563; }
+
+pre { margin: 0; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+a { color: inherit; text-decoration: none; }
+.hover\:underline:hover { text-decoration: underline; }
+
+/* Responsive grid */
+@media (min-width: 768px) {
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.space-y-2 > * + * { margin-top: 0.5rem; }

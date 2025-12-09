@@ -13,7 +13,7 @@ let
     inherit (inputs.pog.packages.${system}) pog;
   };
 
-  inherit (import ./pkgs.nix { inherit pkgs; }) cliTools devTools;
+  inherit (import ./pkgs.nix { inherit pkgs; }) cliTools rustTools webTools;
 
   rustToolchain = pkgs.rust-bin.stable.latest.default;
 in
@@ -37,7 +37,7 @@ in
       Run 'menu' for complete command list.
     '';
 
-    packages = devTools ++ cliTools;
+    packages = rustTools ++ webTools ++ cliTools;
 
     commands = [
       # Build & Run
@@ -146,6 +146,32 @@ in
         command = ''
           ${scripts.tools}/bin/tools "$@"
         '';
+      }
+
+      # Website
+      {
+        name = "web-dev";
+        category = "website";
+        help = "Start website dev server";
+        command = "cd website && bun install && bun run dev";
+      }
+      {
+        name = "web-build";
+        category = "website";
+        help = "Build website for production";
+        command = "cd website && bun install && bun run build";
+      }
+      {
+        name = "web-lint";
+        category = "website";
+        help = "Lint website code";
+        command = "cd website && bun run lint";
+      }
+      {
+        name = "web-format";
+        category = "website";
+        help = "Format website code";
+        command = "cd website && bun run format";
       }
     ];
 

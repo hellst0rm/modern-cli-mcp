@@ -3,6 +3,7 @@ root = true
 
 [*]
 indent_style = space
+indent_size = 2
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
@@ -14,7 +15,13 @@ indent_size = 2
 [*.rs]
 indent_size = 4
 
-[*.{yaml,yml,toml}]
+[*.{yaml,yml,toml,json}]
+indent_size = 2
+
+[*.{js,ts,tsx,jsx}]
+indent_size = 2
+
+[*.{css,scss,html}]
 indent_size = 2
 
 [*.md]
@@ -22,3 +29,6 @@ trim_trailing_whitespace = false
 
 [Makefile]
 indent_style = tab
+
+[Dockerfile]
+indent_size = 4
