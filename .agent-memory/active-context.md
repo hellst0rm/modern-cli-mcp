@@ -1,5 +1,5 @@
 ---
-title: activeContext
+title: active-context
 type: note
 permalink: active-context
 tags:

@@ -1,5 +1,5 @@
 ---
-title: systemPatterns
+title: system-patterns
 type: note
 permalink: system-patterns
 tags:
@@ -96,8 +96,8 @@ Agent Profiles (--profile flag):
 │  └── context      - key-value store     │
 ├─────────────────────────────────────────┤
 │  KNOWLEDGE (basic-memory MCP external)  │
-│  ~/memory-bank/   - global patterns     │
-│  ./memory-bank/   - project context     │
+│  ~/.agent-memory/ - global patterns     │
+│  ./.agent-memory/ - project context     │
 └─────────────────────────────────────────┘
 ```
 

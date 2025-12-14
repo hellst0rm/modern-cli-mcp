@@ -1,5 +1,5 @@
 ---
-title: techContext
+title: tech-context
 type: note
 permalink: tech-context
 tags:

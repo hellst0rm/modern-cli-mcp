@@ -1,5 +1,5 @@
 ---
-title: projectBrief
+title: project-brief
 type: note
 permalink: project-brief
 tags:

@@ -1,5 +1,5 @@
 ---
-title: productContext
+title: product-context
 type: note
 permalink: product-context
 tags:

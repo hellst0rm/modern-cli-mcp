@@ -6,7 +6,7 @@ This guide explains the release process for Modern CLI MCP.
 
 ## CI/CD Features
 
-1. **Documentation-only changes skip tests**: Changes to *.md, memory-bank/, .claude/, website/ don't trigger builds
+1. **Documentation-only changes skip tests**: Changes to *.md, .agent-memory/, .claude/, website/ don't trigger builds
 2. **Automatic Docker builds**: Main branch pushes build edge Docker images
 3. **Release publishing**: Tags trigger binary builds and versioned Docker images
 

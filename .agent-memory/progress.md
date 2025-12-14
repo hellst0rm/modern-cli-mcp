@@ -22,7 +22,7 @@ tags:
 - [done] Tools converted to JSON output: eza, fd, dust, trash_list, fzf_filter, delta, file_type, ast_grep
 - [done] Nix flake builds successfully
 - [done] GitHub workflows: CI, Release (publish.yml), Claude Code (claude.yml), GitHub Pages (pages.yml)
-- [done] CI paths-ignore for docs, memory-bank, .claude/, website
+- [done] CI paths-ignore for docs, .agent-memory, .claude/, website
 - [done] .claude/ directory with agents and commands
 - [done] RELEASE_NOTES.md and RELEASE_WORKFLOW.md
 - [done] Static website: index.html, tools.html, docs.html, styles.css (htmx/hyperscript/UnoCSS)

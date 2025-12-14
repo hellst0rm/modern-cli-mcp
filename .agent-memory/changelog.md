@@ -52,7 +52,7 @@ tags:
 - ast_grep now always outputs JSON (removed optional flag)
 - Website converted from Bun/ElysiaJS to static HTML (GitHub Pages compatible)
 - README.md updated with 70+ tools in table format
-- CI paths-ignore: docs, memory-bank, .claude/, website, scripts
+- CI paths-ignore: docs, .agent-memory, .claude/, website, scripts
 - Updated .gitignore, .editorconfig, .dockerignore
 ### Added
 - 31 new tools (70+ total):
@@ -68,7 +68,7 @@ tags:
 ### Changed
 - All tools default to JSON output for AI/LLM consumption
 - README.md updated with 70+ tools in table format
-- CI paths-ignore: docs, memory-bank, .claude/, website, scripts
+- CI paths-ignore: docs, .agent-memory, .claude/, website, scripts
 - Updated .gitignore, .editorconfig, .dockerignore
 
 ## [0.1.0] - 2025-12-09
