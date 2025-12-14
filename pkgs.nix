@@ -30,7 +30,7 @@
     fd
     duf
     dust
-    trash-cli
+    rm-improved # rip - safer rm with graveyard
 
     # Search
     ripgrep
@@ -86,6 +86,7 @@
     delta
     git
     difftastic
+    gnupatch # For file_patch tool
 
     # Testing
     bats

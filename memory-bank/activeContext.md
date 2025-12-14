@@ -12,36 +12,37 @@ tags:
 
 ## Current Focus
 
-Major v0.2.0 expansion with 70+ tools, project infrastructure, and website.
+Implementing virtual tool groups and agent profiles for reduced cognitive load on LLMs. Following GitHub Copilot's approach of tool clustering.
 
 ## Recent Events (Last 10)
-
-1. [2025-12-09] Added 31 new tools: Git forges (gh, glab), containers (podman, dive, skopeo, crane, trivy), Kubernetes (kubectl, helm, stern, kustomize), data transform (gron, htmlq, pup, miller, dasel)
-2. [2025-12-09] Created GitHub workflows: ci.yml (with paths-ignore), publish.yml (binaries, Docker, FlakeHub, SBOM), claude.yml
-3. [2025-12-09] Created .claude/ directory: settings.json, commands/release.md, agents/rust-mcp-expert.md, agents/cli-tools-expert.md
-4. [2025-12-09] Created RELEASE_NOTES.md (v0.1.0, v0.2.0) and RELEASE_WORKFLOW.md
-5. [2025-12-09] Updated README.md with 70+ tools documentation in table format
-6. [2025-12-09] Created Dockerfile with multi-stage Nix build
-7. [2025-12-09] Created website scaffold: Bun/ElysiaJS/HTMX/Hyperscript/UnoCSS
-8. [2025-12-09] Website files: package.json, src/index.ts, uno.config.ts, public/styles.css
-9. [2025-12-09] Updated .gitignore, .editorconfig, .dockerignore for new project structure
-10. [2025-12-09] All tools default to JSON output for AI/LLM consumption
-
+1. [2025-12-13] Added virtual tool groups: 15 groups (filesystem, file_ops, search, text, git, github, gitlab, kubernetes, container, network, system, archive, reference, diff, mcp)
+2. [2025-12-13] Added agent profiles: explore, architect, review, test, generator, reflector, curator, docs, lint, api, dev-deploy, full
+3. [2025-12-13] Added expand_tools and list_tool_groups meta-tools for tool discovery
+4. [2025-12-13] Added CLI flags: --profile, --list-profiles, --list-groups
+5. [2025-12-13] Profile-aware server instructions in get_info()
+6. [2025-12-12] Added safe filesystem ops: fs_symlink, fs_hardlink with safe_overwrite graveyard backup
+7. [2025-12-12] Added pretty names to all 90+ tools (e.g., "GitHub - Repo", "Git - Status")
+8. [2025-12-12] Added code intelligence tools: symbols (ast-grep), references (ripgrep)
+9. [2025-12-12] Added git primitives: git_status, git_add, git_commit, git_branch, git_checkout, git_log, git_stash
+10. [2025-12-12] Replaced trash-cli with rip (rm-improved) - graveyard-based safe delete
 ## Observations
-
+- [decision] Virtual tool groups reduce cognitive load (GitHub Copilot research: 2-5% improvement)
+- [decision] Agent profiles pre-expand relevant tool groups per use case
+- [decision] expand_tools meta-tool lets models discover tools within groups
+- [decision] All tools remain callable regardless of profile (informational, not restrictive)
 - [decision] JSON preferred over JSONL for MCP (single response, nested structure, jq compatible)
 - [decision] TUI tools excluded (k9s, lazydocker, jnv) - require interactive terminals
-- [decision] Website stack: Bun/ElysiaJS/HTMX/Hyperscript/UnoCSS (not Next.js)
-- [decision] CI paths-ignore: docs, memory-bank, .claude/, website, scripts
-- [decision] FlakeHub publishing for Nix distribution
-
+- [decision] Hybrid memory: SQLite for operational state, basic-memory for knowledge
+- [decision] Internal state stored at ~/.local/share/modern-cli-mcp/state.db
+- [pattern] Pretty tool names: "Category - Action (tool)" format for AI clarity
+- [pattern] Profile-aware instructions highlight relevant groups
+- [architecture] ToolGroup enum with static tool mappings in src/groups.rs
+- [architecture] AgentProfile enum with pre-expanded group sets
 ## Next Steps
-
-- [ ] Test website with `bun run dev`
-- [ ] Create website deployment workflow
-- [ ] Tag and release v0.2.0
-- [ ] Verify Docker image builds correctly
-
+- Benchmark profile impact on agent performance
+- Consider embedding-based tool routing (GitHub's approach)
+- Add profile autodetection from conversation context
+- Document virtual tools in README
 ## Relations
 
 - tracks [[CI Pipeline]]

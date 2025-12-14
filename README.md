@@ -157,23 +157,78 @@ Add to your MCP configuration:
 
 ## Installation
 
-### From Source (Cargo)
+### Nix with Flakes (Recommended)
+
+Flakes are enabled by default in [Determinate Nix](https://determinate.systems/nix-installer/). For standard Nix, enable with `--experimental-features 'nix-command flakes'` or add to `~/.config/nix/nix.conf`:
 
 ```bash
-cargo install --git https://github.com/hellst0rm/modern-cli-mcp
+experimental-features = nix-command flakes
 ```
 
-### From Source (Nix)
-
+**Run directly (no installation):**
 ```bash
-# Run directly
 nix run github:hellst0rm/modern-cli-mcp
+```
 
-# Install to profile
+**Install to profile:**
+```bash
 nix profile install github:hellst0rm/modern-cli-mcp
+```
 
-# Development shell
-nix develop github:hellst0rm/modern-cli-mcp
+**Add to flake.nix:**
+```nix
+{
+  inputs.modern-cli-mcp.url = "github:hellst0rm/modern-cli-mcp";
+
+  # Use in outputs
+  outputs = { self, nixpkgs, modern-cli-mcp }: {
+    # Add to packages, devShells, etc.
+  };
+}
+```
+
+### Nix with FlakeHub
+
+[FlakeHub](https://flakehub.com) provides versioned flake references with semantic versioning.
+
+**Add to flake.nix via CLI:**
+```bash
+fh add hellst0rm/modern-cli-mcp
+```
+
+**Or manually:**
+```nix
+{
+  inputs.modern-cli-mcp.url = "https://flakehub.com/f/hellst0rm/modern-cli-mcp/*.tar.gz";
+}
+```
+
+**Run specific version:**
+```bash
+nix run "https://flakehub.com/f/hellst0rm/modern-cli-mcp/0.2.tar.gz"
+```
+
+### Nix without Flakes (Classic)
+
+For Nix installations without flakes enabled, the repository includes a `default.nix` via [flake-compat](https://github.com/edolstra/flake-compat):
+
+**Build from tarball:**
+```bash
+nix-build https://github.com/hellst0rm/modern-cli-mcp/archive/main.tar.gz -A defaultNix.default
+./result/bin/modern-cli-mcp
+```
+
+**Or clone and build locally:**
+```bash
+git clone https://github.com/hellst0rm/modern-cli-mcp
+cd modern-cli-mcp
+nix-build
+./result/bin/modern-cli-mcp
+```
+
+**Install to profile:**
+```bash
+nix-env -if https://github.com/hellst0rm/modern-cli-mcp/archive/main.tar.gz -A defaultNix.default
 ```
 
 ### Docker
@@ -181,6 +236,14 @@ nix develop github:hellst0rm/modern-cli-mcp
 ```bash
 docker pull ghcr.io/hellst0rm/modern-cli-mcp
 docker run --rm -i ghcr.io/hellst0rm/modern-cli-mcp
+```
+
+### From Source (Cargo)
+
+Requires CLI tools to be installed separately in PATH:
+
+```bash
+cargo install --git https://github.com/hellst0rm/modern-cli-mcp
 ```
 
 ## Development

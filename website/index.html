@@ -72,20 +72,31 @@
 
     <section class="mt-16">
       <h2 class="text-2xl font-bold mb-6 text-center">Installation Options</h2>
-      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
         <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Nix</h3>
-          <code class="text-sm text-gray-300">nix run github:hellst0rm/modern-cli-mcp</code>
+          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Nix (Flakes)</h3>
+          <code class="text-sm text-gray-300 block mb-2">nix run github:hellst0rm/modern-cli-mcp</code>
+          <p class="text-xs text-gray-500">Requires flakes enabled</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Nix (Classic)</h3>
+          <code class="text-sm text-gray-300 block mb-2">nix-build ...archive/main.tar.gz</code>
+          <p class="text-xs text-gray-500">No flakes required</p>
         </div>
         <div class="bg-gray-800 p-6 rounded-lg">
           <h3 class="text-lg font-semibold mb-2 text-cyan-400">Docker</h3>
-          <code class="text-sm text-gray-300">docker run ghcr.io/hellst0rm/modern-cli-mcp</code>
+          <code class="text-sm text-gray-300 block mb-2">docker run ghcr.io/hellst0rm/modern-cli-mcp</code>
+          <p class="text-xs text-gray-500">Container runtime</p>
         </div>
         <div class="bg-gray-800 p-6 rounded-lg">
           <h3 class="text-lg font-semibold mb-2 text-cyan-400">FlakeHub</h3>
-          <code class="text-sm text-gray-300">fh add hellst0rm/modern-cli-mcp</code>
+          <code class="text-sm text-gray-300 block mb-2">fh add hellst0rm/modern-cli-mcp</code>
+          <p class="text-xs text-gray-500">Versioned flake registry</p>
         </div>
       </div>
+      <p class="text-center mt-6 text-gray-400">
+        <a href="docs.html#installation" class="text-cyan-400 hover:underline">See all installation options</a>
+      </p>
     </section>
   </main>
 
