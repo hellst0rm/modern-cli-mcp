@@ -12,37 +12,35 @@ tags:
 
 ## Current Focus
 
-Implementing virtual tool groups and agent profiles for reduced cognitive load on LLMs. Following GitHub Copilot's approach of tool clustering.
+Integrated Determinate Nix and FlakeHub for improved CI/CD and flake management. Migrated project memory to standard `.agent-memory/` structure.
 
 ## Recent Events (Last 10)
-1. [2025-12-13] Added virtual tool groups: 15 groups (filesystem, file_ops, search, text, git, github, gitlab, kubernetes, container, network, system, archive, reference, diff, mcp)
-2. [2025-12-13] Added agent profiles: explore, architect, review, test, generator, reflector, curator, docs, lint, api, dev-deploy, full
-3. [2025-12-13] Added expand_tools and list_tool_groups meta-tools for tool discovery
-4. [2025-12-13] Added CLI flags: --profile, --list-profiles, --list-groups
-5. [2025-12-13] Profile-aware server instructions in get_info()
-6. [2025-12-12] Added safe filesystem ops: fs_symlink, fs_hardlink with safe_overwrite graveyard backup
-7. [2025-12-12] Added pretty names to all 90+ tools (e.g., "GitHub - Repo", "Git - Status")
-8. [2025-12-12] Added code intelligence tools: symbols (ast-grep), references (ripgrep)
-9. [2025-12-12] Added git primitives: git_status, git_add, git_commit, git_branch, git_checkout, git_log, git_stash
-10. [2025-12-12] Replaced trash-cli with rip (rm-improved) - graveyard-based safe delete
+1. [2025-12-14] Migrated memory-bank/ → .agent-memory/ with kebab-case filenames
+2. [2025-12-14] Integrated Determinate Nix: release.yml now uses determinate-nix-action@v3 + magic-nix-cache-action@v8
+3. [2025-12-14] Updated flake.nix to use FlakeHub URLs for nixpkgs and flake-utils
+4. [2025-12-14] Added fh (FlakeHub CLI) to devshell with commands: fh-search, fh-list, fh-resolve, fh-init, fh-add
+5. [2025-12-14] Fixed clippy warnings causing CI failure (dead code, format strings, useless conversion)
+6. [2025-12-14] Implemented .agentignore support for path filtering (src/ignore.rs)
+7. [2025-12-13] Added virtual tool groups: 15 groups (filesystem, file_ops, search, text, git, github, gitlab, kubernetes, container, network, system, archive, reference, diff, mcp)
+8. [2025-12-13] Added agent profiles: explore, architect, review, test, generator, reflector, curator, docs, lint, api, dev-deploy, full
+9. [2025-12-13] Added expand_tools and list_tool_groups meta-tools for tool discovery
+10. [2025-12-13] Added CLI flags: --profile, --list-profiles, --list-groups
+
 ## Observations
-- [decision] Virtual tool groups reduce cognitive load (GitHub Copilot research: 2-5% improvement)
-- [decision] Agent profiles pre-expand relevant tool groups per use case
-- [decision] expand_tools meta-tool lets models discover tools within groups
-- [decision] All tools remain callable regardless of profile (informational, not restrictive)
-- [decision] JSON preferred over JSONL for MCP (single response, nested structure, jq compatible)
-- [decision] TUI tools excluded (k9s, lazydocker, jnv) - require interactive terminals
-- [decision] Hybrid memory: SQLite for operational state, basic-memory for knowledge
-- [decision] Internal state stored at ~/.local/share/modern-cli-mcp/state.db
-- [pattern] Pretty tool names: "Category - Action (tool)" format for AI clarity
-- [pattern] Profile-aware instructions highlight relevant groups
-- [architecture] ToolGroup enum with static tool mappings in src/groups.rs
-- [architecture] AgentProfile enum with pre-expanded group sets
+- [decision] Determinate Nix provides faster, more reliable CI builds
+- [decision] FlakeHub URLs enable semantic versioning with wildcards (0.1.*)
+- [decision] fh CLI in devshell for FlakeHub operations without host changes
+- [decision] .agentignore respected instead of .gitignore (different use cases)
+- [decision] Memory bank uses kebab-case and .agent-memory/ to align with global conventions
+- [pattern] CI workflows use magic-nix-cache-action for GitHub Actions caching
+- [pattern] FlakeHub publish on release for public flake discovery
+- [architecture] Global memory: ~/.agent-memory/, Project memory: ./.agent-memory/
+
 ## Next Steps
-- Benchmark profile impact on agent performance
-- Consider embedding-based tool routing (GitHub's approach)
-- Add profile autodetection from conversation context
-- Document virtual tools in README
+- Verify CI passes with Determinate Nix integration
+- Test FlakeHub publish workflow on next release
+- Document .agentignore usage in README
+
 ## Relations
 
 - tracks [[CI Pipeline]]
