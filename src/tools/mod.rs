@@ -88,6 +88,7 @@ pub struct FdRequest {
     pub file_type: Option<String>,
     #[schemars(description = "Include hidden files")]
     pub hidden: Option<bool>,
+    #[allow(dead_code)] // Deprecated: use .agentignore instead
     #[schemars(description = "Don't respect .gitignore")]
     pub no_ignore: Option<bool>,
     #[schemars(description = "Maximum search depth")]
@@ -1063,6 +1064,7 @@ pub struct RipgrepRequest {
     pub smart_case: Option<bool>,
     #[schemars(description = "Search hidden files")]
     pub hidden: Option<bool>,
+    #[allow(dead_code)] // Deprecated: use .agentignore instead
     #[schemars(description = "Don't respect .gitignore")]
     pub no_ignore: Option<bool>,
     #[schemars(description = "Only show matching filenames")]
@@ -9382,7 +9384,7 @@ impl ServerHandler for ModernCliTools {
     fn get_info(&self) -> ServerInfo {
         let instructions = self.build_instructions();
         ServerInfo {
-            instructions: Some(instructions.into()),
+            instructions: Some(instructions),
             capabilities: ServerCapabilities::builder().enable_tools().build(),
             ..Default::default()
         }

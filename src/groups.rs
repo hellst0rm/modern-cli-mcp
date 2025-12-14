@@ -469,11 +469,13 @@ impl FromStr for AgentProfile {
 }
 
 /// Check if a tool name belongs to a group.
+#[allow(dead_code)]
 pub fn tool_belongs_to_group(tool_name: &str, group: ToolGroup) -> bool {
     group.tools().contains(&tool_name)
 }
 
 /// Find which group a tool belongs to.
+#[allow(dead_code)]
 pub fn find_tool_group(tool_name: &str) -> Option<ToolGroup> {
     ToolGroup::ALL
         .iter()

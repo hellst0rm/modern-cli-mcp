@@ -2,6 +2,8 @@
 //! Internal state management using SQLite for operational data.
 //! Handles auth state, caching, tasks, and context storage.
 
+#![allow(dead_code)] // Many methods reserved for future MCP tool expansion
+
 use rusqlite::{params, Connection, Result as SqliteResult};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

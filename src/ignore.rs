@@ -122,6 +122,7 @@ impl AgentIgnore {
     }
 
     /// Filter a list of paths, removing ignored ones
+    #[allow(dead_code)]
     pub fn filter_paths<P: AsRef<Path>>(&self, paths: Vec<P>) -> Vec<P> {
         paths
             .into_iter()

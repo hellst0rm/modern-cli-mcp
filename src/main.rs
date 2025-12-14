@@ -32,7 +32,7 @@ struct Args {
 
 fn print_profiles() {
     println!("Available Agent Profiles:\n");
-    println!("{:<12} {:<6} {}", "PROFILE", "TOOLS", "DESCRIPTION");
+    println!("{:<12} {:<6} DESCRIPTION", "PROFILE", "TOOLS");
     println!("{}", "-".repeat(80));
     for profile in AgentProfile::ALL {
         println!(
@@ -49,7 +49,7 @@ fn print_groups() {
     use groups::ToolGroup;
 
     println!("Available Tool Groups:\n");
-    println!("{:<12} {:<6} {}", "GROUP", "TOOLS", "DESCRIPTION");
+    println!("{:<12} {:<6} DESCRIPTION", "GROUP", "TOOLS");
     println!("{}", "-".repeat(100));
     for group in ToolGroup::ALL {
         println!(
