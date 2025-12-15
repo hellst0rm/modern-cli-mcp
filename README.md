@@ -8,14 +8,14 @@
 
 **[Documentation](https://hellst0rm.github.io/modern-cli-mcp/)** · **[Tools](https://hellst0rm.github.io/modern-cli-mcp/tools.html)**
 
-MCP server exposing **70+ modern CLI tools** to AI/LLM agents. Provides structured JSON-RPC access to filesystem, Git forges, containers, Kubernetes, and data transformation tools—all optimized for AI consumption with JSON output.
+MCP server exposing **107 modern CLI tools** to AI/LLM agents. Provides structured JSON-RPC access to filesystem, Git forges, containers, Kubernetes, and data transformation tools—all optimized for AI consumption with JSON output.
 
 ## Features
 
-- **70+ Tools**: Filesystem, search, Git (GitHub/GitLab), containers, Kubernetes, data processing
+- **107 Tools in 15 Groups**: Filesystem, search, Git (GitHub/GitLab), containers, Kubernetes, data processing
 - **AI-Optimized Output**: JSON by default for structured parsing
+- **Access Control**: `.agentignore` files to control which files AI agents can access
 - **Zero Config**: Nix bundles all dependencies—no manual tool installation
-- **Stateless**: No caching, no state files, just tools
 
 ## Quick Start
 
