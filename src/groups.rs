@@ -139,6 +139,9 @@ impl ToolGroup {
             ],
             ToolGroup::Container => &[
                 "podman",
+                "Container - Compose",
+                "Container - Buildx",
+                "Container - Build (buildah)",
                 "Container - Registry (skopeo)",
                 "Container - Registry Low-level (crane)",
                 "Container - Image Analyze (dive)",
@@ -233,7 +236,7 @@ impl ToolGroup {
             ToolGroup::GitHub => "Repository, issue, PR, release, workflow, and API operations via gh CLI",
             ToolGroup::GitLab => "Issue, merge request, and pipeline operations via glab CLI",
             ToolGroup::Kubernetes => "kubectl get/apply/delete/describe/logs/exec, Helm charts, Kustomize, multi-pod logs (stern)",
-            ToolGroup::Container => "Podman containers, registry operations (skopeo/crane), image analysis (dive), security scanning (trivy)",
+            ToolGroup::Container => "Podman containers, compose orchestration, buildx multi-platform builds, buildah OCI images, registry operations (skopeo/crane), image analysis (dive), security scanning (trivy)",
             ToolGroup::Network => "HTTP requests (xh), SQL queries (usql), DNS lookups",
             ToolGroup::System => "Shell execution, Nix shells, process listing (procs), benchmarking (hyperfine), system info, shell tests (bats), code stats (tokei)",
             ToolGroup::Archive => "Compress, decompress, and list archives (ouch) - supports tar.gz, zip, 7z, xz, bz2, zstd",

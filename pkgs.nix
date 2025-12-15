@@ -71,6 +71,9 @@
 
     # Containers
     podman # Rootless containers
+    podman-compose # Multi-container orchestration
+    buildah # OCI image builder
+    docker-buildx # Multi-platform builds
     dive # Image layer analysis
     skopeo # Registry operations
     crane # Low-level registry tool

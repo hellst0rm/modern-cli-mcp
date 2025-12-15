@@ -1800,6 +1800,76 @@ pub struct TrivyRequest {
     pub ignore_unfixed: Option<bool>,
 }
 
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct ComposeRequest {
+    #[schemars(
+        description = "Compose subcommand: up, down, ps, logs, build, pull, restart, stop, start"
+    )]
+    pub command: String,
+    #[schemars(description = "Path to compose file (default: docker-compose.yml)")]
+    pub file: Option<String>,
+    #[schemars(description = "Service name(s) to target (space-separated)")]
+    pub services: Option<String>,
+    #[schemars(description = "Run in detached mode (for up)")]
+    pub detach: Option<bool>,
+    #[schemars(description = "Remove volumes (for down)")]
+    pub volumes: Option<bool>,
+    #[schemars(description = "Follow log output (for logs)")]
+    pub follow: Option<bool>,
+    #[schemars(description = "Number of lines to show from end of logs")]
+    pub tail: Option<u32>,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct BuildxRequest {
+    #[schemars(description = "Buildx subcommand: build, imagetools, inspect, ls, create, use, rm")]
+    pub command: String,
+    #[schemars(description = "Build context path or image reference")]
+    pub target: Option<String>,
+    #[schemars(description = "Target platforms (e.g., linux/amd64,linux/arm64)")]
+    pub platform: Option<String>,
+    #[schemars(description = "Image tag(s) (comma-separated)")]
+    pub tags: Option<String>,
+    #[schemars(description = "Path to Dockerfile")]
+    pub file: Option<String>,
+    #[schemars(description = "Push image after build")]
+    pub push: Option<bool>,
+    #[schemars(description = "Load single-platform image into docker/podman")]
+    pub load: Option<bool>,
+    #[schemars(description = "Build arguments (KEY=VALUE, comma-separated)")]
+    pub build_args: Option<String>,
+    #[schemars(description = "Builder instance name")]
+    pub builder: Option<String>,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct BuildahRequest {
+    #[schemars(
+        description = "Buildah subcommand: from, run, copy, add, commit, push, pull, images, containers, rm, rmi, build"
+    )]
+    pub command: String,
+    #[schemars(description = "Target (image, container ID, or context path)")]
+    pub target: Option<String>,
+    #[schemars(description = "Image tag for commit/push")]
+    pub tag: Option<String>,
+    #[schemars(description = "Source path (for copy/add)")]
+    pub source: Option<String>,
+    #[schemars(description = "Destination path (for copy/add)")]
+    pub dest: Option<String>,
+    #[schemars(description = "Command to run (for run subcommand)")]
+    pub run_command: Option<String>,
+    #[schemars(description = "Path to Containerfile/Dockerfile (for build)")]
+    pub file: Option<String>,
+    #[schemars(description = "Output format: json (for images, containers)")]
+    pub format: Option<String>,
+    #[schemars(description = "Additional arguments")]
+    pub args: Option<String>,
+}
+
 // ============================================================================
 // KUBERNETES TOOLS
 // ============================================================================
@@ -6784,6 +6854,236 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("trivy", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(
+        name = "Container - Compose",
+        description = "Multi-container orchestration with podman-compose. \
+        Manage services defined in docker-compose.yml files. \
+        Subcommands: up, down, ps, logs, build, pull, restart, stop, start."
+    )]
+    async fn compose(
+        &self,
+        Parameters(req): Parameters<ComposeRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![];
+
+        if let Some(ref file) = req.file {
+            args.push("-f".into());
+            args.push(file.clone());
+        }
+
+        args.push(req.command.clone());
+
+        match req.command.as_str() {
+            "up" => {
+                if req.detach.unwrap_or(true) {
+                    args.push("-d".into());
+                }
+            }
+            "down" => {
+                if req.volumes.unwrap_or(false) {
+                    args.push("-v".into());
+                }
+            }
+            "logs" => {
+                if req.follow.unwrap_or(false) {
+                    args.push("-f".into());
+                }
+                if let Some(tail) = req.tail {
+                    args.push("--tail".into());
+                    args.push(tail.to_string());
+                }
+            }
+            _ => {}
+        }
+
+        if let Some(ref services) = req.services {
+            for svc in services.split_whitespace() {
+                args.push(svc.to_string());
+            }
+        }
+
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("podman-compose", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(
+        name = "Container - Buildx",
+        description = "Multi-platform container builds with docker buildx. \
+        Build for multiple architectures, manage builders. \
+        Subcommands: build, imagetools, inspect, ls, create, use, rm."
+    )]
+    async fn buildx(
+        &self,
+        Parameters(req): Parameters<BuildxRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec!["buildx".into(), req.command.clone()];
+
+        if let Some(ref builder) = req.builder {
+            args.push("--builder".into());
+            args.push(builder.clone());
+        }
+
+        if req.command == "build" {
+            if let Some(ref platform) = req.platform {
+                args.push("--platform".into());
+                args.push(platform.clone());
+            }
+            if let Some(ref tags) = req.tags {
+                for tag in tags.split(',') {
+                    args.push("-t".into());
+                    args.push(tag.trim().to_string());
+                }
+            }
+            if let Some(ref file) = req.file {
+                args.push("-f".into());
+                args.push(file.clone());
+            }
+            if req.push.unwrap_or(false) {
+                args.push("--push".into());
+            }
+            if req.load.unwrap_or(false) {
+                args.push("--load".into());
+            }
+            if let Some(ref build_args) = req.build_args {
+                for ba in build_args.split(',') {
+                    args.push("--build-arg".into());
+                    args.push(ba.trim().to_string());
+                }
+            }
+        }
+
+        if let Some(ref target) = req.target {
+            args.push(target.clone());
+        }
+
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("docker", &args_ref).await {
+            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+                output.to_result_string(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+        }
+    }
+
+    #[tool(
+        name = "Container - Build (buildah)",
+        description = "OCI container image builder with buildah. \
+        Build images without daemon, fine-grained control. \
+        Subcommands: from, run, copy, add, commit, push, pull, images, containers, rm, rmi, build."
+    )]
+    async fn buildah(
+        &self,
+        Parameters(req): Parameters<BuildahRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let mut args: Vec<String> = vec![req.command.clone()];
+
+        // JSON output for listing commands
+        if matches!(req.command.as_str(), "images" | "containers")
+            && req.format.as_deref() == Some("json")
+        {
+            args.push("--json".into());
+        }
+
+        match req.command.as_str() {
+            "from" | "pull" => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+            }
+            "run" => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+                if let Some(ref cmd) = req.run_command {
+                    args.push("--".into());
+                    for part in cmd.split_whitespace() {
+                        args.push(part.to_string());
+                    }
+                }
+            }
+            "copy" | "add" => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+                if let Some(ref source) = req.source {
+                    args.push(source.clone());
+                }
+                if let Some(ref dest) = req.dest {
+                    args.push(dest.clone());
+                }
+            }
+            "commit" => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+                if let Some(ref tag) = req.tag {
+                    args.push(tag.clone());
+                }
+            }
+            "push" => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+            }
+            "build" => {
+                if let Some(ref file) = req.file {
+                    args.push("-f".into());
+                    args.push(file.clone());
+                }
+                if let Some(ref tag) = req.tag {
+                    args.push("-t".into());
+                    args.push(tag.clone());
+                }
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                } else {
+                    args.push(".".into());
+                }
+            }
+            "rm" | "rmi" => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+            }
+            _ => {
+                if let Some(ref target) = req.target {
+                    args.push(target.clone());
+                }
+            }
+        }
+
+        if let Some(ref extra) = req.args {
+            for arg in extra.split_whitespace() {
+                args.push(arg.to_string());
+            }
+        }
+
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        match self.executor.run("buildah", &args_ref).await {
             Ok(output) => Ok(CallToolResult::success(vec![Content::text(
                 output.to_result_string(),
             )])),
