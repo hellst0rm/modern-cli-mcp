@@ -33,6 +33,7 @@
       <ul class="space-y-1">
         <li><a href="#installation" class="hover:text-cyan-400">Installation</a></li>
         <li><a href="#configuration" class="hover:text-cyan-400">Configuration</a></li>
+        <li><a href="#agentignore" class="hover:text-cyan-400">.agentignore</a></li>
         <li><a href="#usage" class="hover:text-cyan-400">Usage</a></li>
         <li><a href="#environment" class="hover:text-cyan-400">Environment Variables</a></li>
       </ul>
@@ -83,7 +84,7 @@
 }</code></pre>
 
           <p class="text-gray-400 mb-2">Run specific version:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code>nix run "https://flakehub.com/f/hellst0rm/modern-cli-mcp/0.2.tar.gz"</code></pre>
+          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code>nix run "https://flakehub.com/f/hellst0rm/modern-cli-mcp/0.3.tar.gz"</code></pre>
         </div>
 
         <!-- Classic Nix -->
@@ -157,6 +158,45 @@ docker run --rm -i ghcr.io/hellst0rm/modern-cli-mcp</code></pre>
     }
   }
 }</code></pre>
+    </section>
+
+    <section id="agentignore" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6 text-cyan-400">.agentignore</h2>
+
+      <p class="text-gray-400 mb-4">
+        Control which files AI agents can access using <code class="bg-gray-800 px-2 py-1 rounded">.agentignore</code> files.
+        Uses gitignore syntax but operates independently—tools respect <code class="bg-gray-800 px-2 py-1 rounded">.agentignore</code> only, not <code class="bg-gray-800 px-2 py-1 rounded">.gitignore</code>.
+      </p>
+
+      <h3 class="text-xl font-semibold mb-2">Pattern Sources</h3>
+      <p class="text-gray-400 mb-3">Patterns are loaded from (in order of precedence):</p>
+      <ol class="list-decimal list-inside text-gray-400 mb-6 space-y-1">
+        <li><code class="bg-gray-800 px-2 py-1 rounded">~/.config/agent/ignore</code> — Global patterns for all projects</li>
+        <li><code class="bg-gray-800 px-2 py-1 rounded">.agentignore</code> — Per-directory patterns (walked up from working directory)</li>
+      </ol>
+
+      <h3 class="text-xl font-semibold mb-2">Example</h3>
+      <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-6"><code class="text-gray-300"># Secrets and credentials
+*.secret
+.env*
+secrets/
+credentials.json
+
+# Large generated files
+node_modules/
+target/
+*.min.js
+
+# Sensitive data
+*.pem
+*.key</code></pre>
+
+      <h3 class="text-xl font-semibold mb-2">Behavior</h3>
+      <ul class="list-disc list-inside text-gray-400 space-y-1">
+        <li>Blocked paths return an error: <code class="bg-gray-800 px-2 py-1 rounded text-red-400">Path is blocked by .agentignore</code></li>
+        <li>Search tools (fd, rg, ast-grep) automatically apply ignore patterns</li>
+        <li>Patterns in child directories extend (not replace) parent patterns</li>
+      </ul>
     </section>
 
     <section id="usage" class="mb-12">
