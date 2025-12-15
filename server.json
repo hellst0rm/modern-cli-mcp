@@ -1,0 +1,74 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nacosolutions/modern-cli-mcp",
+  "title": "Modern CLI MCP Server",
+  "description": "MCP server exposing 107 modern CLI tools to AI/LLM agents. Provides structured JSON-RPC access to filesystem, Git forges, containers, Kubernetes, and data transformation tools—all optimized for AI consumption with JSON output.",
+  "version": "0.3.1",
+  "websiteUrl": "https://nacosolutions.github.io/modern-cli-mcp/",
+  "repository": {
+    "url": "https://github.com/NacoSolutions/modern-cli-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/nacosolutions/modern-cli-mcp",
+      "version": "0.3.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeArguments": {
+        "positional": ["run", "--rm", "-i"],
+        "named": []
+      }
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "installationMethods": [
+        {
+          "type": "nix-flake",
+          "command": "nix run github:NacoSolutions/modern-cli-mcp",
+          "description": "Run directly via Nix flakes (recommended)",
+          "requirements": "Nix with flakes enabled or Determinate Nix"
+        },
+        {
+          "type": "nix-profile",
+          "command": "nix profile install github:NacoSolutions/modern-cli-mcp",
+          "description": "Install to user profile",
+          "requirements": "Nix with flakes enabled"
+        },
+        {
+          "type": "docker",
+          "command": "docker run --rm -i ghcr.io/nacosolutions/modern-cli-mcp",
+          "description": "Run via Docker container",
+          "requirements": "Docker or Podman"
+        },
+        {
+          "type": "binary",
+          "description": "Download pre-built binary from GitHub releases",
+          "url": "https://github.com/NacoSolutions/modern-cli-mcp/releases"
+        }
+      ],
+      "features": [
+        "107 CLI tools across 15 categories",
+        "Zero-config installation via Nix",
+        "AI-optimized JSON output by default",
+        ".agentignore access control",
+        "Filesystem, Git, containers, Kubernetes, data transformation"
+      ],
+      "toolCategories": {
+        "filesystem": ["eza", "bat", "fd", "duf", "dust", "trash"],
+        "search": ["rg", "fzf", "ast_grep", "web_search"],
+        "git-forges": ["gh", "glab"],
+        "containers": ["podman", "dive", "skopeo", "crane", "trivy", "compose", "buildx", "buildah"],
+        "kubernetes": ["kubectl", "stern", "helm", "kustomize"],
+        "data": ["jq", "yq", "gron", "htmlq", "pup", "miller", "dasel"],
+        "network": ["http", "dns", "usql"],
+        "system": ["procs", "tokei", "hyperfine"],
+        "diff": ["delta", "difft"],
+        "utilities": ["tldr", "grex", "ouch", "pueue"]
+      }
+    }
+  }
+}

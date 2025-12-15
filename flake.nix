@@ -108,8 +108,13 @@
 
         formatter = pkgs.nixfmt-rfc-style;
 
-        apps.default = flake-utils.lib.mkApp {
-          drv = wrappedMcp;
+        apps = {
+          default = flake-utils.lib.mkApp {
+            drv = wrappedMcp;
+          };
+          flakeSystemCheck = flake-utils.lib.mkApp {
+            drv = (import ./checks.nix { inherit pkgs self; }).flakeSystemCheck;
+          };
         };
       }
     );

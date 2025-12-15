@@ -138,6 +138,12 @@ in
         command = "nix flake show";
       }
       {
+        name = "flake-system-check";
+        category = "nix";
+        help = "Check if system has Determinate Nix or flakes enabled";
+        command = "nix run .#flakeSystemCheck";
+      }
+      {
         name = "update";
         category = "nix";
         help = "Update flake inputs";
