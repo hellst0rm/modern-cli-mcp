@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tools - Modern CLI MCP</title>
-  <meta name="description" content="70+ CLI tools available in Modern CLI MCP">
+  <meta name="description" content="100+ CLI tools organized into 15 groups for AI/LLM agents">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css">
   <link rel="stylesheet" href="styles.css">
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -26,144 +26,376 @@
   </nav>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-4">Available Tools</h1>
-    <p class="text-gray-400 mb-8">70+ tools organized by category. Most tools support JSON output for AI/LLM consumption.</p>
+    <h1 class="text-3xl font-bold mb-2">Tool Groups</h1>
+    <p class="text-gray-400 mb-6">100+ tools organized into 15 groups. Use <code class="bg-gray-800 px-2 py-1 rounded text-cyan-400">expand_tools</code> or <code class="bg-gray-800 px-2 py-1 rounded text-cyan-400">list_tool_groups</code> to explore available tools.</p>
 
-    <div class="mb-6">
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8 max-w-md">
+      <div class="bg-gray-800 p-4 rounded-lg text-center">
+        <div class="text-2xl font-bold text-cyan-400">15</div>
+        <div class="text-sm text-gray-400">Groups</div>
+      </div>
+      <div class="bg-gray-800 p-4 rounded-lg text-center">
+        <div class="text-2xl font-bold text-cyan-400">100+</div>
+        <div class="text-sm text-gray-400">Tools</div>
+      </div>
+      <div class="bg-gray-800 p-4 rounded-lg text-center">
+        <div class="text-2xl font-bold text-cyan-400">12</div>
+        <div class="text-sm text-gray-400">Profiles</div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="mb-8">
       <input type="text"
              placeholder="Filter tools..."
              class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 w-full max-w-md focus:border-cyan-400 focus:outline-none"
              _="on input
                 set query to my value.toLowerCase()
-                for tool in <.tool-tag/>
-                  if tool.textContent.toLowerCase().contains(query)
-                    remove .hidden from tool
+                for card in <.tool-card/>
+                  if card.textContent.toLowerCase().contains(query)
+                    remove .hidden from card
                   else
-                    add .hidden to tool
+                    add .hidden to card
                 end">
     </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Filesystem</h3>
+    <!-- Tool Groups Grid -->
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+      <!-- Filesystem -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Filesystem</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">17 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">List directories (eza), view files (bat), find files (fd), disk usage, trash management, copy/move/mkdir</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">eza</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">bat</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">fd</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">duf</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">dust</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">trash_put</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">trash_list</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">trash_restore</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">eza</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">bat</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">fd</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">duf</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">dust</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">rip</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">copy</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">move</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mkdir</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">stat</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">symlink</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Search</h3>
+      <!-- File Operations -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">File Operations</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">5 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Read, write, edit, append, and patch files</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">rg</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">fzf_filter</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">ast_grep</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">web_search</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">file_read</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">file_write</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">file_edit</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">file_append</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">file_patch</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Git Forges</h3>
+      <!-- Search -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Search & Code Analysis</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">6 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Search content (ripgrep), fuzzy find (fzf), web search, AST-based code search, symbols and references</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_repo</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_issue</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_pr</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_search</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_release</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_workflow</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_run</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gh_api</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">glab_issue</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">glab_mr</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">glab_pipeline</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">ripgrep</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">fzf</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">ast-grep</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">web_search</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">symbols</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">references</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Containers</h3>
+      <!-- Text Processing -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Text Processing</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">11 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">JSON (jq), YAML (yq), HTML (htmlq/pup), CSV (xsv), data processing (miller), find/replace (sd/sad)</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">podman</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">dive</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">skopeo</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">crane</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">trivy</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">jq</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">yq</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">dasel</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">htmlq</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">pup</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">sd</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">hck</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gron</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">miller</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">xsv</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">sad</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Kubernetes</h3>
+      <!-- Git -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Git Version Control</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">8 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Status, diff, log, add, commit, checkout, branch, stash operations</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kubectl_get</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kubectl_describe</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kubectl_logs</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kubectl_apply</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kubectl_delete</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kubectl_exec</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">stern</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">helm</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">kustomize</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_status</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_diff</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_log</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_add</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_commit</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_checkout</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_branch</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">git_stash</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Data Transform</h3>
+      <!-- GitHub -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">GitHub</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">10 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Repository, issue, PR, release, workflow, and API operations via gh CLI</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">jq</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">yq</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">gron</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">htmlq</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">pup</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">miller</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">dasel</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_repo</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_issue</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_pr</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_search</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_release</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_workflow</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_run</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_api</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">gh_auth</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Network</h3>
+      <!-- GitLab -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">GitLab</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">5 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Issue, merge request, and pipeline operations via glab CLI</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">http</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">dns</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">usql</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">glab_issue</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">glab_mr</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">glab_pipeline</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">glab_auth</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">System</h3>
+      <!-- Kubernetes -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Kubernetes & Helm</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">9 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">kubectl get/apply/delete/describe/logs/exec, Helm charts, Kustomize, multi-pod logs (stern)</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">procs</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">tokei</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">hyperfine</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kubectl_get</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kubectl_apply</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kubectl_delete</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kubectl_describe</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kubectl_logs</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kubectl_exec</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">stern</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">helm</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">kustomize</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Diff/Git</h3>
+      <!-- Container -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Container & Registry</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">5 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Podman containers, registry operations (skopeo/crane), image analysis (dive), security scanning (trivy)</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">delta</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">difft</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">git_diff</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">podman</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">skopeo</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">crane</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">dive</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">trivy</span>
         </div>
       </div>
 
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <h3 class="text-xl font-semibold mb-4 text-cyan-400">Utilities</h3>
+      <!-- Network -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Network & Database</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">3 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">HTTP requests (xh), SQL queries (usql), DNS lookups (doggo)</p>
         <div class="flex flex-wrap gap-2">
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">tldr</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">grex</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">ouch_compress</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">ouch_decompress</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">ouch_list</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">pueue_add</span>
-          <span class="tool-tag bg-gray-700 px-3 py-1 rounded text-sm">pueue_status</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">xh</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">usql</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">doggo</span>
         </div>
       </div>
+
+      <!-- System -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">System & Shell</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">7 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Shell execution (bash/zsh/fish/nu), Nix shells, process listing (procs), benchmarking (hyperfine), code stats (tokei)</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">shell_exec</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">nix_shell_exec</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">procs</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">hyperfine</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">system_info</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">bats</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">tokei</span>
+        </div>
+      </div>
+
+      <!-- Archive -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Archive & Compression</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">3 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Compress, decompress, and list archives (ouch) - supports tar.gz, zip, 7z, xz, bz2, zstd</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">ouch_compress</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">ouch_decompress</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">ouch_list</span>
+        </div>
+      </div>
+
+      <!-- Reference -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Reference & Docs</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">3 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Command help (tldr), cheatsheets (navi), regex generation (grex)</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">tldr</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">navi</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">grex</span>
+        </div>
+      </div>
+
+      <!-- Diff -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">Diff & Comparison</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">2 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">File diffs with syntax highlighting (delta), structural/AST-aware diffs (difftastic)</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">delta</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">difftastic</span>
+        </div>
+      </div>
+
+      <!-- MCP -->
+      <div class="tool-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-cyan-400">MCP State Management</h3>
+          <span class="bg-gray-700 px-2 py-1 rounded text-xs">10 tools</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Task tracking, context storage, and caching for session state</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_auth_check</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_task_create</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_task_list</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_task_update</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_task_delete</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_context_get</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_context_set</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_cache_get</span>
+          <span class="bg-gray-700/50 px-2 py-1 rounded text-xs">mcp_cache_set</span>
+        </div>
+      </div>
+
     </div>
+
+    <!-- Agent Profiles Section -->
+    <section class="mt-16">
+      <h2 class="text-2xl font-bold mb-4">Agent Profiles</h2>
+      <p class="text-gray-400 mb-6">Pre-configured tool sets for different agent roles. Use <code class="bg-gray-800 px-2 py-1 rounded text-cyan-400">--profile &lt;name&gt;</code> to start with relevant tools pre-expanded.</p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">explore</span>
+            <span class="text-xs text-gray-500">filesystem, search, git</span>
+          </div>
+          <p class="text-sm text-gray-400">Codebase discovery and exploration</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">architect</span>
+            <span class="text-xs text-gray-500">filesystem, search, reference</span>
+          </div>
+          <p class="text-sm text-gray-400">System design and planning</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">review</span>
+            <span class="text-xs text-gray-500">git, search, diff</span>
+          </div>
+          <p class="text-sm text-gray-400">Code review and quality analysis</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">test</span>
+            <span class="text-xs text-gray-500">file_ops, search, system</span>
+          </div>
+          <p class="text-sm text-gray-400">Test writing and execution</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">generator</span>
+            <span class="text-xs text-gray-500">file_ops, search, git, system</span>
+          </div>
+          <p class="text-sm text-gray-400">General task execution</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">dev-deploy</span>
+            <span class="text-xs text-gray-500">k8s, container, git, github</span>
+          </div>
+          <p class="text-sm text-gray-400">Container and Kubernetes deployment</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">api</span>
+            <span class="text-xs text-gray-500">network, text, file_ops</span>
+          </div>
+          <p class="text-sm text-gray-400">API interaction and integration</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">docs</span>
+            <span class="text-xs text-gray-500">file_ops, filesystem, reference</span>
+          </div>
+          <p class="text-sm text-gray-400">Documentation writing</p>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-cyan-400">full</span>
+            <span class="text-xs text-gray-500">all groups</span>
+          </div>
+          <p class="text-sm text-gray-400">All tools pre-expanded</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="bg-gray-800 border-t border-gray-700 mt-16 py-8">
