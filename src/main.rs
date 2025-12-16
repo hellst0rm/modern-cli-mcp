@@ -1,5 +1,6 @@
 // modern-cli-mcp/src/main.rs
 mod cli;
+mod format;
 mod groups;
 mod ignore;
 mod state;
@@ -43,6 +44,11 @@ struct Args {
     /// List tools available for direct execution (busybox-style).
     #[arg(long)]
     list_tools: bool,
+
+    /// Enable dual-response mode. Tools return both formatted summary (for humans)
+    /// and raw structured data (for LLM processing) in a single response.
+    #[arg(long, env = "MCP_DUAL_RESPONSE")]
+    dual_response: bool,
 }
 
 fn print_profiles() {
@@ -180,15 +186,23 @@ async fn main() -> Result<()> {
         }
     }
 
+    if args.dual_response {
+        tracing::info!("Dual-response mode enabled (formatted + raw data)");
+    }
+
     tracing::info!("Starting Modern CLI Tools MCP server");
 
-    let service =
-        ModernCliTools::new_with_config(profile, args.dynamic_toolsets, pre_enabled_toolsets)
-            .serve(stdio())
-            .await
-            .inspect_err(|e| {
-                tracing::error!("Server error: {:?}", e);
-            })?;
+    let service = ModernCliTools::new_with_config(
+        profile,
+        args.dynamic_toolsets,
+        pre_enabled_toolsets,
+        args.dual_response,
+    )
+    .serve(stdio())
+    .await
+    .inspect_err(|e| {
+        tracing::error!("Server error: {:?}", e);
+    })?;
 
     service.waiting().await?;
     Ok(())

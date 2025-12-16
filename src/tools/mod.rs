@@ -6,6 +6,7 @@ pub use executor::{
     parse_file_to_json, parse_fzf_to_json, CommandExecutor, ExecOptions,
 };
 
+use crate::format;
 use crate::groups::{AgentProfile, ToolGroup};
 use crate::ignore::AgentIgnore;
 use crate::state::{ContextScope, StateManager, TaskStatus};
@@ -53,6 +54,8 @@ pub struct ModernCliTools {
     dynamic_config: DynamicToolsetConfig,
     /// Reverse lookup: tool name -> group (for filtering)
     tool_to_group: HashMap<&'static str, ToolGroup>,
+    /// Dual-response mode: return formatted summary + raw data
+    dual_response: bool,
 }
 
 // ============================================================================
@@ -2474,13 +2477,14 @@ impl ModernCliTools {
     /// Create a new ModernCliTools instance with default settings (all tools enabled).
     #[allow(dead_code)]
     pub fn new(profile: Option<AgentProfile>) -> Self {
-        Self::new_with_config(profile, false, Vec::new())
+        Self::new_with_config(profile, false, Vec::new(), false)
     }
 
     pub fn new_with_config(
         profile: Option<AgentProfile>,
         dynamic_toolsets: bool,
         pre_enabled_groups: Vec<ToolGroup>,
+        dual_response: bool,
     ) -> Self {
         let state = StateManager::new().expect("Failed to initialize state manager");
         let ignore = AgentIgnore::new().unwrap_or_default();
@@ -2512,6 +2516,7 @@ impl ModernCliTools {
                 enabled_groups: Arc::new(RwLock::new(enabled_groups)),
             },
             tool_to_group,
+            dual_response,
         }
     }
 
@@ -2541,6 +2546,29 @@ impl ModernCliTools {
             .iter()
             .copied()
             .collect()
+    }
+
+    /// Build a tool response, optionally with dual-response format.
+    ///
+    /// In dual-response mode, returns two content blocks:
+    /// 1. Human-readable summary (text)
+    /// 2. Raw structured data (embedded resource)
+    ///
+    /// In normal mode, returns only the raw data as text.
+    fn build_response(&self, summary: &str, raw_data: &str, uri: &str) -> CallToolResult {
+        if self.dual_response {
+            CallToolResult::success(vec![
+                Content::text(summary),
+                Content::embedded_text(uri, raw_data),
+            ])
+        } else {
+            CallToolResult::success(vec![Content::text(raw_data)])
+        }
+    }
+
+    /// Build an error response (same format regardless of dual-response mode)
+    fn build_error(&self, error: &str) -> CallToolResult {
+        CallToolResult::error(vec![Content::text(error)])
     }
 
     // ========================================================================
@@ -2601,7 +2629,8 @@ impl ModernCliTools {
         match self.executor.run("eza", &args_ref).await {
             Ok(output) => {
                 let json_output = parse_eza_to_json(&output.stdout, &path);
-                Ok(CallToolResult::success(vec![Content::text(json_output)]))
+                let summary = format::format_eza_summary(&json_output, &path);
+                Ok(self.build_response(&summary, &json_output, "data://eza/listing.json"))
             }
             Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
         }
@@ -2720,12 +2749,14 @@ impl ModernCliTools {
         }
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        let pattern = req.pattern.as_deref().unwrap_or("*");
         match self.executor.run("fd", &args_ref).await {
             Ok(output) => {
                 let json_output = parse_fd_to_json(&output.stdout);
-                Ok(CallToolResult::success(vec![Content::text(json_output)]))
+                let summary = format::format_fd_summary(&json_output, pattern);
+                Ok(self.build_response(&summary, &json_output, "data://fd/results.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -7926,16 +7957,21 @@ impl ModernCliTools {
                 if use_json {
                     // Parse porcelain v2 format to JSON
                     let json = parse_git_status_porcelain_v2(&output.stdout);
-                    Ok(CallToolResult::success(vec![Content::text(
-                        serde_json::to_string(&json).unwrap_or_else(|_| "{}".to_string()),
-                    )]))
+                    let json_str =
+                        serde_json::to_string(&json).unwrap_or_else(|_| "{}".to_string());
+                    let summary = format::format_git_status_summary(&json_str);
+                    Ok(self.build_response(&summary, &json_str, "data://git/status.json"))
                 } else {
-                    Ok(CallToolResult::success(vec![Content::text(
-                        output.to_result_string(),
-                    )]))
+                    let raw = output.to_result_string();
+                    let summary = format::format_generic_summary(
+                        "git status",
+                        output.success,
+                        raw.lines().count(),
+                    );
+                    Ok(self.build_response(&summary, &raw, "data://git/status.txt"))
                 }
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
