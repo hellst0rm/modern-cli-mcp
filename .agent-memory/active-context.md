@@ -8,15 +8,17 @@ tags:
 - focus
 ---
 
-- [2024-12-16] Added dual-response mode (--dual-response flag) - returns formatted summary + raw data
-- [2024-12-16] Released v0.5.0 with busybox-style CLI execution and install.sh script
-- [2024-12-16] Created src/format.rs with summary formatters for tool output
-- [2024-12-16] Refactored eza, fd, git_status to use build_response() pattern (3/100+ tools)
+- [2025-12-17] Completed dual-response refactoring for all 104+ tools
+- [2025-12-16] Added dual-response mode (--dual-response flag) - returns formatted summary + raw data
+- [2025-12-16] Released v0.5.0 with busybox-style CLI execution and install.sh script
+- [2025-12-16] Created src/format.rs with summary formatters for tool output
 
 # Active Context: modern-cli-mcp
 
 ## Current Focus
-Released v0.4.0 with Dynamic Toolsets Mode, pretty names for all 104+ tools, and extended batch operations. Release deployed to FlakeHub, GitHub Releases, and Docker (ghcr.io/nacosolutions/modern-cli-mcp:0.4.0).
+Completed dual-response mode for all 104+ tools. Every tool now uses `build_response()` pattern:
+- Normal mode: Returns raw JSON/text data
+- Dual-response mode (`--dual-response`): Returns summary text + embedded resource with raw data
 
 ## Recent Events (Last 10)
 1. [2025-12-16] Released v0.4.0 - Dynamic Toolsets, pretty names, batch operations

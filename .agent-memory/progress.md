@@ -66,14 +66,14 @@ tags:
 - .agentignore for file access control
 - Busybox-style CLI execution (`modern-cli-mcp eza -la`)
 - install.sh script with --user/--system and --full/--binary options
-- Dual-response mode foundation (--dual-response flag)
-  - build_response() helper method
+- Dual-response mode (`--dual-response` flag) - COMPLETE
+  - All 104+ tools use build_response() pattern
+  - Returns summary + embedded resource in dual mode
+  - Returns raw data in normal mode
   - format.rs with summary formatters
-  - 3 tools refactored: eza, fd, git_status
 
 ### In Progress
-- Dual-response mode: 3/100+ tools refactored
-- Remaining tools need build_response() integration
+None - dual-response mode complete.
 
 
 ## Recent Session
