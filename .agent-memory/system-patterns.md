@@ -137,3 +137,34 @@ Agent Profiles (--profile flag):
 - uses [[HTMX]]
 - publishes_to [[FlakeHub]]
 - publishes_to [[GitHub Container Registry]]
+
+
+## Dual-Response Pattern
+
+Architecture for returning both human-readable summaries and raw structured data:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              MCP Tool Response                          │
+├─────────────────────────────────────────────────────────┤
+│  Content[0]: Text (human summary)                       │
+│  Content[1]: EmbeddedResource (raw JSON/JSONL)          │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Helper Method**: `build_response(&self, summary, raw_data, uri)`
+- Returns single text block in normal mode
+- Returns text + embedded resource in dual-response mode
+
+**Summary Formatters**: `src/format.rs`
+- Per-tool-category formatters (eza, fd, git, etc.)
+- Parse JSON output, extract key metrics
+- Generate concise human-readable summaries
+
+**URI Scheme**: `data://<tool>/<filename>`
+- Examples: `data://eza/listing.json`, `data://git/status.json`
+
+**MIME Types**:
+- JSON: `application/json`
+- JSONL: `application/x-ndjson`
+

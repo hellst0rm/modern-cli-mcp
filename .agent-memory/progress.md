@@ -56,9 +56,25 @@ tags:
 - [architecture] Virtual tools: src/groups.rs with ToolGroup and AgentProfile enums
 - [research] GitHub Copilot found 2-5% benchmark improvement with reduced toolsets
 ## Current Status
-**Phase**: v0.4.0 Released
-**Health**: Green
-**Milestone**: v0.4.0 deployed to FlakeHub, GitHub, Docker
+**Version**: 0.5.0 (released)
+**Phase**: Active Development - Dual Response Mode
+
+### What Works
+- 104+ CLI tools exposed via MCP protocol
+- Dynamic Toolsets Mode (beta) - on-demand tool activation
+- Agent Profiles for role-based tool selection
+- .agentignore for file access control
+- Busybox-style CLI execution (`modern-cli-mcp eza -la`)
+- install.sh script with --user/--system and --full/--binary options
+- Dual-response mode foundation (--dual-response flag)
+  - build_response() helper method
+  - format.rs with summary formatters
+  - 3 tools refactored: eza, fd, git_status
+
+### In Progress
+- Dual-response mode: 3/100+ tools refactored
+- Remaining tools need build_response() integration
+
 
 ## Recent Session
 - Released v0.4.0: Dynamic Toolsets & Batch Operations

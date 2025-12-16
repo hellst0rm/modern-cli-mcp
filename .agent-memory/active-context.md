@@ -8,6 +8,11 @@ tags:
 - focus
 ---
 
+- [2024-12-16] Added dual-response mode (--dual-response flag) - returns formatted summary + raw data
+- [2024-12-16] Released v0.5.0 with busybox-style CLI execution and install.sh script
+- [2024-12-16] Created src/format.rs with summary formatters for tool output
+- [2024-12-16] Refactored eza, fd, git_status to use build_response() pattern (3/100+ tools)
+
 # Active Context: modern-cli-mcp
 
 ## Current Focus

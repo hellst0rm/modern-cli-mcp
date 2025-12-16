@@ -2571,6 +2571,29 @@ impl ModernCliTools {
         CallToolResult::error(vec![Content::text(error)])
     }
 
+    /// Build a command response with auto-generated summary.
+    /// For tools that run CLI commands and return their output.
+    fn build_cmd_response(&self, tool: &str, output: &str, uri: &str) -> CallToolResult {
+        let lines = output.lines().count();
+        let summary = format::format_generic_summary(tool, true, lines);
+        self.build_response(&summary, output, uri)
+    }
+
+    /// Build a JSON response with item count summary.
+    /// For tools that return JSON arrays or objects with countable items.
+    fn build_json_response(&self, tool: &str, json: &str, uri: &str) -> CallToolResult {
+        let count = serde_json::from_str::<serde_json::Value>(json)
+            .ok()
+            .and_then(|v| {
+                v.as_array()
+                    .map(|a| a.len())
+                    .or_else(|| v.get("count").and_then(|c| c.as_u64()).map(|c| c as usize))
+            })
+            .unwrap_or(0);
+        let summary = format!("{}: {} items", tool, count);
+        self.build_response(&summary, json, uri)
+    }
+
     // ========================================================================
     // FILESYSTEM TOOLS
     // ========================================================================
@@ -2675,10 +2698,13 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("bat", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let line_count = content.lines().count();
+                let summary = format::format_bat_summary(&req.path, line_count);
+                Ok(self.build_response(&summary, &content, "data://bat/content.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -2786,10 +2812,11 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("duf", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("duf", &content, "data://duf/usage.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -2832,9 +2859,10 @@ impl ModernCliTools {
         match self.executor.run("dust", &args_ref).await {
             Ok(output) => {
                 let json_output = parse_dust_to_json(&output.stdout, &path);
-                Ok(CallToolResult::success(vec![Content::text(json_output)]))
+                let summary = format::format_dust_summary(&json_output);
+                Ok(self.build_response(&summary, &json_output, "data://dust/sizes.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -2859,7 +2887,7 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("rip", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+            Ok(output) => {
                 if output.success {
                     let result = serde_json::json!({
                         "success": true,
@@ -2867,12 +2895,14 @@ impl ModernCliTools {
                         "count": paths.len(),
                         "graveyard": req.graveyard.as_deref().unwrap_or("~/.graveyard")
                     });
-                    result.to_string()
+                    let json = result.to_string();
+                    let summary = format!("Trashed {} items", paths.len());
+                    Ok(self.build_response(&summary, &json, "data://rip/trash.json"))
                 } else {
-                    output.to_result_string()
-                },
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+                    Ok(self.build_error(&output.to_result_string()))
+                }
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -2903,11 +2933,11 @@ impl ModernCliTools {
                     "graveyard": req.graveyard.as_deref().unwrap_or("~/.graveyard"),
                     "items": items
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format!("Graveyard: {} items", items.len());
+                Ok(self.build_response(&summary, &json, "data://rip/graveyard.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -2929,14 +2959,21 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("rip", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
+            Ok(output) => {
                 if output.success {
-                    format!("Restored from graveyard: {}", output.stdout.trim())
+                    let restored = output.stdout.trim();
+                    let result = serde_json::json!({
+                        "success": true,
+                        "restored": restored
+                    });
+                    let json = result.to_string();
+                    let summary = format!("Restored: {}", restored);
+                    Ok(self.build_response(&summary, &json, "data://rip/restore.json"))
                 } else {
-                    output.to_result_string()
-                },
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+                    Ok(self.build_error(&output.to_result_string()))
+                }
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5077,16 +5114,16 @@ impl ModernCliTools {
                     if let Some(max) = req.max_results {
                         lines.truncate(max as usize);
                     }
-                    Ok(CallToolResult::success(vec![Content::text(
-                        serde_json::to_string(&lines).unwrap_or_else(|_| "[]".to_string()),
-                    )]))
+                    let json = serde_json::to_string(&lines).unwrap_or_else(|_| "[]".to_string());
+                    let summary = format::format_rg_summary(&output.stdout, &req.pattern);
+                    Ok(self.build_response(&summary, &json, "data://rg/matches.json"))
                 } else {
-                    Ok(CallToolResult::success(vec![Content::text(
-                        output.to_result_string(),
-                    )]))
+                    let content = output.to_result_string();
+                    let summary = format::format_rg_summary(&content, &req.pattern);
+                    Ok(self.build_response(&summary, &content, "data://rg/matches.txt"))
                 }
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5126,9 +5163,11 @@ impl ModernCliTools {
                     output.stdout.clone()
                 };
                 let json_output = parse_fzf_to_json(&result, &req.query);
-                Ok(CallToolResult::success(vec![Content::text(json_output)]))
+                let count = result.lines().count();
+                let summary = format!("fzf: {} matches for '{}'", count, req.query);
+                Ok(self.build_response(&summary, &json_output, "data://fzf/matches.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5168,10 +5207,15 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("sg", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_json_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let json = output.to_json_string();
+                let count = serde_json::from_str::<Vec<serde_json::Value>>(&json)
+                    .map(|v| v.len())
+                    .unwrap_or(0);
+                let summary = format!("ast-grep: {} matches for '{}'", count, req.pattern);
+                Ok(self.build_response(&summary, &json, "data://ast-grep/matches.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5201,12 +5245,16 @@ impl ModernCliTools {
             .run_with_stdin("sd", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                text_to_json_envelope("sd", &output.stdout, output.success),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(
-                text_to_json_envelope("sd", &e, false),
-            )])),
+            Ok(output) => {
+                let json = text_to_json_envelope("sd", &output.stdout, output.success);
+                let summary = format::format_text_summary(
+                    "sd",
+                    req.input.lines().count(),
+                    output.stdout.lines().count(),
+                );
+                Ok(self.build_response(&summary, &json, "data://sd/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5241,10 +5289,11 @@ impl ModernCliTools {
             .run_with_stdin("jq", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("jq", &content, "data://jq/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5276,10 +5325,11 @@ impl ModernCliTools {
             .run_with_stdin("yq", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("yq", &content, "data://yq/output.yaml"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5312,10 +5362,11 @@ impl ModernCliTools {
             .run_with_stdin("qsv", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("xsv", &content, "data://xsv/output.csv"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5343,12 +5394,11 @@ impl ModernCliTools {
             .run_with_stdin("hck", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                text_to_json_envelope("hck", &output.stdout, output.success),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(
-                text_to_json_envelope("hck", &e, false),
-            )])),
+            Ok(output) => {
+                let json = text_to_json_envelope("hck", &output.stdout, output.success);
+                Ok(self.build_cmd_response("hck", &json, "data://hck/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5740,20 +5790,18 @@ impl ModernCliTools {
         let path = req.path.as_deref();
         match self.executor.run_in_dir("git", &args_ref, path).await {
             Ok(output) => {
-                match self
+                let diff_content = match self
                     .executor
                     .run_with_stdin("delta", &["--color-only"], &output.stdout)
                     .await
                 {
-                    Ok(delta_output) => Ok(CallToolResult::success(vec![Content::text(
-                        delta_output.to_result_string(),
-                    )])),
-                    Err(_) => Ok(CallToolResult::success(vec![Content::text(
-                        output.to_result_string(),
-                    )])),
-                }
+                    Ok(delta_output) => delta_output.to_result_string(),
+                    Err(_) => output.to_result_string(),
+                };
+                let summary = format::format_git_diff_summary(&diff_content);
+                Ok(self.build_response(&summary, &diff_content, "data://git/diff.txt"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5782,10 +5830,11 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("bats", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("bats", &content, "data://bats/results.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -5800,9 +5849,10 @@ impl ModernCliTools {
         match self.executor.run("file", &["-b", &req.path]).await {
             Ok(output) => {
                 let json_output = parse_file_to_json(&output.stdout, &req.path);
-                Ok(CallToolResult::success(vec![Content::text(json_output)]))
+                let summary = format!("File type: {}", output.stdout.trim());
+                Ok(self.build_response(&summary, &json_output, "data://file/type.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6733,10 +6783,11 @@ impl ModernCliTools {
             .run_with_stdin("gron", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("gron", &content, "data://gron/output.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6767,12 +6818,11 @@ impl ModernCliTools {
             .run_with_stdin("htmlq", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                text_to_json_envelope("htmlq", &output.stdout, output.success),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(
-                text_to_json_envelope("htmlq", &e, false),
-            )])),
+            Ok(output) => {
+                let json = text_to_json_envelope("htmlq", &output.stdout, output.success);
+                Ok(self.build_cmd_response("htmlq", &json, "data://htmlq/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6799,10 +6849,11 @@ impl ModernCliTools {
             .run_with_stdin("pup", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("pup", &content, "data://pup/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6836,10 +6887,11 @@ impl ModernCliTools {
             .run_with_stdin("mlr", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("miller", &content, "data://miller/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6871,10 +6923,11 @@ impl ModernCliTools {
             .run_with_stdin("dasel", &args_ref, &req.input)
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                Ok(self.build_cmd_response("dasel", &content, "data://dasel/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6913,10 +6966,12 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("podman", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let summary = format!("podman {}", req.command);
+                Ok(self.build_response(&summary, &content, "data://podman/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6943,10 +6998,12 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("dive", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let summary = format!("dive analysis: {}", req.image);
+                Ok(self.build_response(&summary, &content, "data://dive/analysis.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -6973,10 +7030,12 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("skopeo", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let summary = format!("skopeo {}", req.command);
+                Ok(self.build_response(&summary, &content, "data://skopeo/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -7001,10 +7060,12 @@ impl ModernCliTools {
 
         let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
         match self.executor.run("crane", &args_ref).await {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let summary = format!("crane {} {}", req.command, req.image);
+                Ok(self.build_response(&summary, &content, "data://crane/output.json"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8006,11 +8067,12 @@ impl ModernCliTools {
                     "files": req.files,
                     "output": output.to_result_string()
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let files: Vec<&str> = req.files.split_whitespace().collect();
+                let summary = format!("Staged {} files", files.len());
+                Ok(self.build_response(&summary, &json, "data://git/add.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8042,16 +8104,21 @@ impl ModernCliTools {
             .await
         {
             Ok(output) => {
+                let success = output.exit_code == Some(0);
                 let result = serde_json::json!({
-                    "success": output.exit_code == Some(0),
+                    "success": success,
                     "message": req.message,
                     "output": output.to_result_string()
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = if success {
+                    "Commit created"
+                } else {
+                    "Commit failed"
+                };
+                Ok(self.build_response(summary, &json, "data://git/commit.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8123,10 +8190,12 @@ impl ModernCliTools {
             .run_in_dir("git", &args_ref, req.path.as_deref())
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let summary = format!("git branch {}", req.command);
+                Ok(self.build_response(&summary, &content, "data://git/branch.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8161,16 +8230,21 @@ impl ModernCliTools {
             .await
         {
             Ok(output) => {
+                let success = output.exit_code == Some(0);
                 let result = serde_json::json!({
-                    "success": output.exit_code == Some(0),
+                    "success": success,
                     "target": req.target,
                     "output": output.to_result_string()
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = if success {
+                    format!("Checked out {}", req.target)
+                } else {
+                    format!("Checkout failed for {}", req.target)
+                };
+                Ok(self.build_response(&summary, &json, "data://git/checkout.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8234,16 +8308,17 @@ impl ModernCliTools {
                             }
                         })
                         .collect();
-                    Ok(CallToolResult::success(vec![Content::text(
-                        serde_json::to_string(&commits).unwrap_or_else(|_| "[]".to_string()),
-                    )]))
+                    let json = serde_json::to_string(&commits).unwrap_or_else(|_| "[]".to_string());
+                    let summary = format::format_git_log_summary(&json);
+                    Ok(self.build_response(&summary, &json, "data://git/log.json"))
                 } else {
-                    Ok(CallToolResult::success(vec![Content::text(
-                        output.to_result_string(),
-                    )]))
+                    let content = output.to_result_string();
+                    let count = content.lines().count();
+                    let summary = format!("git log: {} lines", count);
+                    Ok(self.build_response(&summary, &content, "data://git/log.txt"))
                 }
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8307,10 +8382,12 @@ impl ModernCliTools {
             .run_in_dir("git", &args_ref, req.path.as_deref())
             .await
         {
-            Ok(output) => Ok(CallToolResult::success(vec![Content::text(
-                output.to_result_string(),
-            )])),
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(e)])),
+            Ok(output) => {
+                let content = output.to_result_string();
+                let summary = format!("git stash {}", req.command);
+                Ok(self.build_response(&summary, &content, "data://git/stash.txt"))
+            }
+            Err(e) => Ok(self.build_error(&e)),
         }
     }
 
@@ -8429,9 +8506,9 @@ impl ModernCliTools {
             "symbols": all_results
         });
 
-        Ok(CallToolResult::success(vec![Content::text(
-            result.to_string(),
-        )]))
+        let json = result.to_string();
+        let summary = format!("Found {} symbols in {}", all_results.len(), req.path);
+        Ok(self.build_response(&summary, &json, "data://code/symbols.json"))
     }
 
     #[tool(
@@ -8512,14 +8589,11 @@ impl ModernCliTools {
                     "references": references
                 });
 
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format!("Found {} references to '{}'", references.len(), req.symbol);
+                Ok(self.build_response(&summary, &json, "data://code/references.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Search failed: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Search failed: {}", e))),
         }
     }
 
@@ -8575,14 +8649,11 @@ impl ModernCliTools {
                     "content": selected.join("\n")
                 });
 
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format::format_file_read_summary(&req.path, selected.len());
+                Ok(self.build_response(&summary, &json, "data://file/read.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Failed to read file: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Failed to read file: {}", e))),
         }
     }
 
@@ -8658,14 +8729,11 @@ impl ModernCliTools {
                     "bytes_written": req.content.len(),
                     "graveyarded_original": graveyarded
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format::format_file_write_summary(&req.path, req.content.len());
+                Ok(self.build_response(&summary, &json, "data://file/write.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Failed to write file: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Failed to write file: {}", e))),
         }
     }
 
@@ -8782,6 +8850,13 @@ impl ModernCliTools {
             .filter(|r| r["success"].as_bool() == Some(false))
             .count();
 
+        // Calculate totals before consuming results
+        let total_replacements: usize = results
+            .iter()
+            .filter_map(|r| r.get("replacements").and_then(|v| v.as_u64()))
+            .map(|n| n as usize)
+            .sum();
+
         let response = if paths.len() == 1 {
             results.into_iter().next().unwrap()
         } else {
@@ -8792,9 +8867,16 @@ impl ModernCliTools {
             })
         };
 
-        Ok(CallToolResult::success(vec![Content::text(
-            response.to_string(),
-        )]))
+        let json = response.to_string();
+        let summary = format::format_file_edit_summary(
+            if paths.len() == 1 {
+                paths[0]
+            } else {
+                "multiple files"
+            },
+            total_replacements,
+        );
+        Ok(self.build_response(&summary, &json, "data://file/edit.json"))
     }
 
     #[tool(
@@ -8843,14 +8925,11 @@ impl ModernCliTools {
                     "path": req.path,
                     "bytes_appended": req.content.len()
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format!("Appended {} bytes to {}", req.content.len(), req.path);
+                Ok(self.build_response(&summary, &json, "data://file/append.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Failed to append to file: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Failed to append to file: {}", e))),
         }
     }
 
@@ -8937,20 +9016,22 @@ impl ModernCliTools {
         let args = vec!["-u", "--input", &patch_path, &req.path];
         match self.executor.run("patch", &args).await {
             Ok(output) => {
+                let success = output.exit_code == Some(0);
                 let result = serde_json::json!({
-                    "success": output.exit_code == Some(0),
+                    "success": success,
                     "path": req.path,
                     "backed_up": backed_up,
                     "output": output.to_result_string()
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = if success {
+                    format!("Patched {}", req.path)
+                } else {
+                    format!("Patch failed for {}", req.path)
+                };
+                Ok(self.build_response(&summary, &json, "data://file/patch.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Patch failed: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Patch failed: {}", e))),
         }
     }
 
@@ -8999,15 +9080,19 @@ impl ModernCliTools {
             }
         }
 
+        let created = results
+            .iter()
+            .filter(|r| r["success"].as_bool() == Some(true))
+            .count();
         let response = serde_json::json!({
-            "created": results.iter().filter(|r| r["success"].as_bool() == Some(true)).count(),
+            "created": created,
             "failed": results.iter().filter(|r| r["success"].as_bool() == Some(false)).count(),
             "results": results
         });
 
-        Ok(CallToolResult::success(vec![Content::text(
-            response.to_string(),
-        )]))
+        let json = response.to_string();
+        let summary = format!("Created {} directories", created);
+        Ok(self.build_response(&summary, &json, "data://fs/mkdir.json"))
     }
 
     #[tool(
@@ -9161,9 +9246,9 @@ impl ModernCliTools {
             "success_count": success_count,
             "results": results
         });
-        Ok(CallToolResult::success(vec![Content::text(
-            result.to_string(),
-        )]))
+        let json = result.to_string();
+        let summary = format!("Copied {}/{} items", success_count, sources.len());
+        Ok(self.build_response(&summary, &json, "data://fs/copy.json"))
     }
 
     #[tool(
@@ -9274,9 +9359,9 @@ impl ModernCliTools {
             "success_count": success_count,
             "results": results
         });
-        Ok(CallToolResult::success(vec![Content::text(
-            result.to_string(),
-        )]))
+        let json = result.to_string();
+        let summary = format!("Moved {}/{} items", success_count, sources.len());
+        Ok(self.build_response(&summary, &json, "data://fs/move.json"))
     }
 
     #[tool(
@@ -9348,9 +9433,9 @@ impl ModernCliTools {
             serde_json::json!({ "results": results })
         };
 
-        Ok(CallToolResult::success(vec![Content::text(
-            response.to_string(),
-        )]))
+        let json = response.to_string();
+        let summary = format!("Stat: {} paths", paths.len());
+        Ok(self.build_response(&summary, &json, "data://fs/stat.json"))
     }
 
     #[tool(
@@ -9372,15 +9457,19 @@ impl ModernCliTools {
             }));
         }
 
+        let exists_count = results
+            .iter()
+            .filter(|r| r["exists"].as_bool() == Some(true))
+            .count();
         let response = if paths.len() == 1 {
             results.into_iter().next().unwrap()
         } else {
             serde_json::json!({ "results": results })
         };
 
-        Ok(CallToolResult::success(vec![Content::text(
-            response.to_string(),
-        )]))
+        let json = response.to_string();
+        let summary = format!("{}/{} paths exist", exists_count, paths.len());
+        Ok(self.build_response(&summary, &json, "data://fs/exists.json"))
     }
 
     #[tool(
@@ -9432,14 +9521,11 @@ impl ModernCliTools {
                     "link": req.link,
                     "graveyarded_existing": graveyarded
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format!("Created symlink {} -> {}", req.link, req.target);
+                Ok(self.build_response(&summary, &json, "data://fs/symlink.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Failed to create symlink: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Failed to create symlink: {}", e))),
         }
     }
 
@@ -9492,14 +9578,11 @@ impl ModernCliTools {
                     "link": req.link,
                     "graveyarded_existing": graveyarded
                 });
-                Ok(CallToolResult::success(vec![Content::text(
-                    result.to_string(),
-                )]))
+                let json = result.to_string();
+                let summary = format!("Created hardlink {} -> {}", req.link, req.source);
+                Ok(self.build_response(&summary, &json, "data://fs/hardlink.json"))
             }
-            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                "Failed to create hard link: {}",
-                e
-            ))])),
+            Err(e) => Ok(self.build_error(&format!("Failed to create hard link: {}", e))),
         }
     }
 
