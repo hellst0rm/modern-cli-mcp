@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modern CLI MCP</title>
-  <meta name="description" content="MCP server exposing 107 modern CLI tools to AI/LLM agents with .agentignore access control">
+  <meta name="description" content="MCP server exposing 104+ modern CLI tools to AI/LLM agents. Features Dynamic Toolsets for on-demand activation and .agentignore for access control.">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css">
   <link rel="stylesheet" href="styles.css">
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -28,7 +28,7 @@
   <main class="max-w-6xl mx-auto px-4 py-8">
     <div class="text-center py-16">
       <h1 class="text-5xl font-bold mb-4">Modern CLI MCP</h1>
-      <p class="text-xl text-gray-400 mb-8">107 CLI tools for AI/LLM agents via MCP</p>
+      <p class="text-xl text-gray-400 mb-8">104+ modern CLI tools for AI/LLM agents via MCP</p>
 
       <div class="flex justify-center gap-4 mb-12">
         <a href="https://github.com/NacoSolutions/modern-cli-mcp" class="bg-cyan-600 hover:bg-cyan-500 px-6 py-3 rounded-lg font-semibold transition">
@@ -41,24 +41,24 @@
 
       <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
         <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-xl font-semibold mb-2">107 Tools</h3>
+          <h3 class="text-xl font-semibold mb-2">104+ Tools</h3>
           <p class="text-gray-400">Filesystem, Git, containers, Kubernetes, and more</p>
         </div>
         <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-xl font-semibold mb-2">15 Groups</h3>
-          <p class="text-gray-400">Organized by category for easy discovery</p>
+          <h3 class="text-xl font-semibold mb-2">15 Toolsets</h3>
+          <p class="text-gray-400">Dynamic on-demand activation</p>
         </div>
         <div class="bg-gray-800 p-6 rounded-lg">
           <h3 class="text-xl font-semibold mb-2">.agentignore</h3>
-          <p class="text-gray-400">Control which files AI agents can access</p>
+          <p class="text-gray-400">Control file access per project</p>
         </div>
         <div class="bg-gray-800 p-6 rounded-lg">
           <h3 class="text-xl font-semibold mb-2">JSON Output</h3>
           <p class="text-gray-400">Optimized for AI/LLM consumption</p>
         </div>
         <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-xl font-semibold mb-2">Zero Config</h3>
-          <p class="text-gray-400">Nix bundles all dependencies</p>
+          <h3 class="text-xl font-semibold mb-2">Portable</h3>
+          <p class="text-gray-400">AppImage or Nix - all deps bundled</p>
         </div>
       </div>
     </div>
@@ -66,8 +66,28 @@
     <section class="mt-16">
       <h2 class="text-2xl font-bold mb-6 text-center">Quick Start</h2>
       <div class="bg-gray-800 p-6 rounded-lg max-w-2xl mx-auto">
-        <p class="text-gray-400 mb-4">Add to your Claude Desktop config:</p>
-        <pre class="bg-gray-900 p-4 rounded overflow-x-auto"><code class="text-cyan-400">{
+        <div class="flex gap-2 mb-4">
+          <button class="px-4 py-2 bg-cyan-600 rounded font-semibold text-sm" onclick="document.getElementById('qs-appimage').classList.remove('hidden'); document.getElementById('qs-nix').classList.add('hidden'); this.classList.add('bg-cyan-600'); this.nextElementSibling.classList.remove('bg-cyan-600'); this.nextElementSibling.classList.add('bg-gray-700');">AppImage</button>
+          <button class="px-4 py-2 bg-gray-700 rounded font-semibold text-sm" onclick="document.getElementById('qs-nix').classList.remove('hidden'); document.getElementById('qs-appimage').classList.add('hidden'); this.classList.add('bg-cyan-600'); this.previousElementSibling.classList.remove('bg-cyan-600'); this.previousElementSibling.classList.add('bg-gray-700');">Nix</button>
+        </div>
+
+        <div id="qs-appimage">
+          <p class="text-gray-400 mb-2 text-sm">1. Download AppImage:</p>
+          <pre class="bg-gray-900 p-3 rounded overflow-x-auto mb-3 text-sm"><code>curl -fsSL https://github.com/NacoSolutions/modern-cli-mcp/releases/latest/download/modern-cli-mcp-x86_64.AppImage -o /opt/modern-cli-mcp.AppImage && chmod +x /opt/modern-cli-mcp.AppImage</code></pre>
+          <p class="text-gray-400 mb-2 text-sm">2. Add to MCP config:</p>
+          <pre class="bg-gray-900 p-3 rounded overflow-x-auto text-sm"><code class="text-cyan-400">{
+  "mcpServers": {
+    "modern-cli": {
+      "command": "/opt/modern-cli-mcp.AppImage",
+      "args": []
+    }
+  }
+}</code></pre>
+        </div>
+
+        <div id="qs-nix" class="hidden">
+          <p class="text-gray-400 mb-2 text-sm">Add to MCP config (requires <a href="https://determinate.systems/nix-installer/" class="text-cyan-400 hover:underline">Nix</a>):</p>
+          <pre class="bg-gray-900 p-3 rounded overflow-x-auto text-sm"><code class="text-cyan-400">{
   "mcpServers": {
     "modern-cli": {
       "command": "nix",
@@ -75,31 +95,27 @@
     }
   }
 }</code></pre>
+        </div>
       </div>
     </section>
 
     <section class="mt-16">
-      <h2 class="text-2xl font-bold mb-6 text-center">Installation Options</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-        <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Nix (Flakes)</h3>
-          <code class="text-sm text-gray-300 block mb-2">nix run github:NacoSolutions/modern-cli-mcp</code>
-          <p class="text-xs text-gray-500">Requires flakes enabled</p>
+      <h2 class="text-2xl font-bold mb-6 text-center">How It Works</h2>
+      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="bg-gray-800 p-6 rounded-lg text-center">
+          <div class="text-3xl mb-3">1</div>
+          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Install</h3>
+          <p class="text-sm text-gray-400">Download AppImage or use Nix</p>
         </div>
-        <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Nix (Classic)</h3>
-          <code class="text-sm text-gray-300 block mb-2">nix-build ...archive/main.tar.gz</code>
-          <p class="text-xs text-gray-500">No flakes required</p>
+        <div class="bg-gray-800 p-6 rounded-lg text-center">
+          <div class="text-3xl mb-3">2</div>
+          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Configure</h3>
+          <p class="text-sm text-gray-400">Add JSON to your MCP client</p>
         </div>
-        <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Docker</h3>
-          <code class="text-sm text-gray-300 block mb-2">docker run ghcr.io/nacosolutions/modern-cli-mcp</code>
-          <p class="text-xs text-gray-500">Container runtime</p>
-        </div>
-        <div class="bg-gray-800 p-6 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2 text-cyan-400">FlakeHub</h3>
-          <code class="text-sm text-gray-300 block mb-2">fh add NacoSolutions/modern-cli-mcp</code>
-          <p class="text-xs text-gray-500">Versioned flake registry</p>
+        <div class="bg-gray-800 p-6 rounded-lg text-center">
+          <div class="text-3xl mb-3">3</div>
+          <h3 class="text-lg font-semibold mb-2 text-cyan-400">Ready</h3>
+          <p class="text-sm text-gray-400">104+ tools available immediately</p>
         </div>
       </div>
       <p class="text-center mt-6 text-gray-400">

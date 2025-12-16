@@ -34,6 +34,7 @@
         <li><a href="#installation" class="hover:text-cyan-400">Installation</a></li>
         <li><a href="#configuration" class="hover:text-cyan-400">Configuration</a></li>
         <li><a href="#profiles" class="hover:text-cyan-400">Agent Profiles</a></li>
+        <li><a href="#dynamic-toolsets" class="hover:text-cyan-400">Dynamic Toolsets</a></li>
         <li><a href="#agentignore" class="hover:text-cyan-400">.agentignore</a></li>
         <li><a href="#usage" class="hover:text-cyan-400">Usage</a></li>
         <li><a href="#environment" class="hover:text-cyan-400">Environment Variables</a></li>
@@ -43,94 +44,85 @@
     <section id="installation" class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 text-cyan-400">Installation</h2>
 
-      <div class="space-y-8">
-        <!-- Nix with Flakes -->
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Nix with Flakes (Recommended)</h3>
-          <p class="text-gray-400 mb-3">
-            Flakes are enabled by default in <a href="https://determinate.systems/nix-installer/" class="text-cyan-400 hover:underline">Determinate Nix</a>.
-            For standard Nix, enable with <code class="bg-gray-800 px-2 py-1 rounded">--experimental-features 'nix-command flakes'</code> or add to <code class="bg-gray-800 px-2 py-1 rounded">~/.config/nix/nix.conf</code>:
-          </p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code>experimental-features = nix-command flakes</code></pre>
+      <p class="text-gray-400 mb-6">
+        Two recommended options: <strong class="text-white">AppImage</strong> for any Linux system, or <strong class="text-white">Nix</strong> for reproducible builds.
+      </p>
 
-          <p class="text-gray-400 mb-2">Run directly (no installation):</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code>nix run github:NacoSolutions/modern-cli-mcp</code></pre>
-
-          <p class="text-gray-400 mb-2">Install to profile:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code>nix profile install github:NacoSolutions/modern-cli-mcp</code></pre>
-
-          <p class="text-gray-400 mb-2">Add to flake.nix:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code class="text-cyan-300">{
-  inputs.modern-cli-mcp.url = "github:NacoSolutions/modern-cli-mcp";
-
-  outputs = { self, nixpkgs, modern-cli-mcp }: {
-    # Use modern-cli-mcp.packages.${system}.default
-  };
-}</code></pre>
-        </div>
-
-        <!-- FlakeHub -->
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Nix with FlakeHub</h3>
-          <p class="text-gray-400 mb-3">
-            <a href="https://flakehub.com" class="text-cyan-400 hover:underline">FlakeHub</a> provides versioned flake references with semantic versioning.
-          </p>
-
-          <p class="text-gray-400 mb-2">Add to flake.nix via CLI:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code>fh add NacoSolutions/modern-cli-mcp</code></pre>
-
-          <p class="text-gray-400 mb-2">Or manually:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code class="text-cyan-300">{
-  inputs.modern-cli-mcp.url = "https://flakehub.com/f/NacoSolutions/modern-cli-mcp/*.tar.gz";
-}</code></pre>
-
-          <p class="text-gray-400 mb-2">Run specific version:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code>nix run "https://flakehub.com/f/NacoSolutions/modern-cli-mcp/0.3.tar.gz"</code></pre>
-        </div>
-
-        <!-- Classic Nix -->
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Nix without Flakes (Classic)</h3>
-          <p class="text-gray-400 mb-3">
-            For Nix installations without flakes enabled. Uses <a href="https://github.com/edolstra/flake-compat" class="text-cyan-400 hover:underline">flake-compat</a>.
-          </p>
-
-          <p class="text-gray-400 mb-2">Build from tarball:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code>nix-build https://github.com/NacoSolutions/modern-cli-mcp/archive/main.tar.gz -A defaultNix.default
-./result/bin/modern-cli-mcp</code></pre>
-
-          <p class="text-gray-400 mb-2">Or clone and build locally:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code>git clone https://github.com/NacoSolutions/modern-cli-mcp
-cd modern-cli-mcp
-nix-build
-./result/bin/modern-cli-mcp</code></pre>
-
-          <p class="text-gray-400 mb-2">Install to profile:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code>nix-env -if https://github.com/NacoSolutions/modern-cli-mcp/archive/main.tar.gz -A defaultNix.default</code></pre>
-        </div>
-
-        <!-- Docker -->
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Docker</h3>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code>docker pull ghcr.io/nacosolutions/modern-cli-mcp
-docker run --rm -i ghcr.io/nacosolutions/modern-cli-mcp</code></pre>
-        </div>
-
-        <!-- Cargo -->
-        <div>
-          <h3 class="text-xl font-semibold mb-2">From Source (Cargo)</h3>
-          <p class="text-gray-400 mb-3">Requires CLI tools to be installed separately in PATH:</p>
-          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code>cargo install --git https://github.com/NacoSolutions/modern-cli-mcp</code></pre>
-        </div>
+      <!-- AppImage -->
+      <div class="bg-gray-800 p-6 rounded-lg mb-6 border-l-4 border-cyan-400">
+        <h3 class="text-xl font-semibold mb-3 text-cyan-400">AppImage (Recommended for non-Nix users)</h3>
+        <p class="text-gray-400 text-sm mb-3">Single portable executable with all 104+ CLI tools bundled. No dependencies required.</p>
+        <pre class="bg-gray-900 p-4 rounded overflow-x-auto mb-3"><code># Install to /opt (recommended)
+curl -fsSL https://github.com/NacoSolutions/modern-cli-mcp/releases/latest/download/modern-cli-mcp-x86_64.AppImage \
+  -o /opt/modern-cli-mcp.AppImage
+chmod +x /opt/modern-cli-mcp.AppImage</code></pre>
+        <p class="text-gray-500 text-xs">Or download manually from <a href="https://github.com/NacoSolutions/modern-cli-mcp/releases" class="text-cyan-400 hover:underline">GitHub Releases</a></p>
       </div>
+
+      <!-- Nix -->
+      <div class="bg-gray-800 p-6 rounded-lg mb-6 border-l-4 border-cyan-400">
+        <h3 class="text-xl font-semibold mb-3 text-cyan-400">Nix (Recommended for Nix users)</h3>
+        <p class="text-gray-400 text-sm mb-3">
+          Runs directly from GitHub or FlakeHub. Requires <a href="https://determinate.systems/nix-installer/" class="text-cyan-400 hover:underline">Nix with flakes</a>.
+        </p>
+        <pre class="bg-gray-900 p-4 rounded overflow-x-auto mb-3"><code># Run from GitHub (latest)
+nix run github:NacoSolutions/modern-cli-mcp
+
+# Run from FlakeHub (versioned)
+nix run "https://flakehub.com/f/NacoSolutions/modern-cli-mcp/0.4.tar.gz"</code></pre>
+      </div>
+
+      <!-- Other options collapsed -->
+      <details class="mb-4">
+        <summary class="cursor-pointer text-gray-400 hover:text-cyan-400 font-semibold">Other installation methods</summary>
+        <div class="mt-4 space-y-4 pl-4 border-l-2 border-gray-700">
+          <div>
+            <h4 class="font-semibold text-gray-300 mb-2">Add as flake input</h4>
+            <pre class="bg-gray-800 p-4 rounded overflow-x-auto text-sm"><code># flake.nix
+{
+  inputs.modern-cli-mcp.url = "github:NacoSolutions/modern-cli-mcp";
+  # or FlakeHub: "https://flakehub.com/f/NacoSolutions/modern-cli-mcp/*.tar.gz"
+}</code></pre>
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-300 mb-2">Classic Nix (no flakes)</h4>
+            <pre class="bg-gray-800 p-4 rounded overflow-x-auto text-sm"><code>nix-build https://github.com/NacoSolutions/modern-cli-mcp/archive/main.tar.gz -A defaultNix.default
+./result/bin/modern-cli-mcp</code></pre>
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-300 mb-2">Cargo (tools not included)</h4>
+            <p class="text-gray-500 text-sm mb-2">Server only. Requires all CLI tools installed separately in PATH.</p>
+            <pre class="bg-gray-800 p-4 rounded overflow-x-auto text-sm"><code>cargo install --git https://github.com/NacoSolutions/modern-cli-mcp</code></pre>
+          </div>
+        </div>
+      </details>
     </section>
 
     <section id="configuration" class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 text-cyan-400">Configuration</h2>
 
-      <h3 class="text-xl font-semibold mb-2">Claude Desktop</h3>
-      <p class="text-gray-400 mb-3">Add to <code class="bg-gray-800 px-2 py-1 rounded">~/.config/claude/claude_desktop_config.json</code>:</p>
-      <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code class="text-cyan-300">{
+      <p class="text-gray-400 mb-4">Add to your MCP client's config file:</p>
+
+      <!-- Tabs for AppImage vs Nix -->
+      <div class="mb-6">
+        <div class="flex gap-2 mb-4">
+          <button class="px-4 py-2 bg-cyan-600 rounded font-semibold text-sm" onclick="document.getElementById('config-appimage').classList.remove('hidden'); document.getElementById('config-nix').classList.add('hidden'); this.classList.add('bg-cyan-600'); this.nextElementSibling.classList.remove('bg-cyan-600'); this.nextElementSibling.classList.add('bg-gray-700');">AppImage</button>
+          <button class="px-4 py-2 bg-gray-700 rounded font-semibold text-sm" onclick="document.getElementById('config-nix').classList.remove('hidden'); document.getElementById('config-appimage').classList.add('hidden'); this.classList.add('bg-cyan-600'); this.previousElementSibling.classList.remove('bg-cyan-600'); this.previousElementSibling.classList.add('bg-gray-700');">Nix</button>
+        </div>
+
+        <div id="config-appimage">
+          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code class="text-cyan-300">{
+  "mcpServers": {
+    "modern-cli": {
+      "command": "/opt/modern-cli-mcp.AppImage",
+      "args": []
+    }
+  }
+}</code></pre>
+        </div>
+
+        <div id="config-nix" class="hidden">
+          <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code class="text-cyan-300">{
   "mcpServers": {
     "modern-cli": {
       "command": "nix",
@@ -138,27 +130,16 @@ docker run --rm -i ghcr.io/nacosolutions/modern-cli-mcp</code></pre>
     }
   }
 }</code></pre>
+        </div>
+      </div>
 
-      <h3 class="text-xl font-semibold mb-2 mt-6">Claude Code</h3>
-      <p class="text-gray-400 mb-3">Add to <code class="bg-gray-800 px-2 py-1 rounded">~/.config/claude-code/settings.json</code>:</p>
-      <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code class="text-cyan-300">{
-  "mcpServers": {
-    "modern-cli": {
-      "command": "nix",
-      "args": ["run", "github:NacoSolutions/modern-cli-mcp", "--"]
-    }
-  }
-}</code></pre>
-
-      <h3 class="text-xl font-semibold mb-2 mt-6">Docker Configuration</h3>
-      <pre class="bg-gray-800 p-4 rounded overflow-x-auto"><code class="text-cyan-300">{
-  "mcpServers": {
-    "modern-cli": {
-      "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/nacosolutions/modern-cli-mcp"]
-    }
-  }
-}</code></pre>
+      <h3 class="text-xl font-semibold mb-2">Config File Locations</h3>
+      <ul class="list-disc list-inside text-gray-400 space-y-1 mb-4">
+        <li><code class="bg-gray-800 px-2 py-1 rounded">~/.claude/settings.json</code> — Claude Code</li>
+        <li><code class="bg-gray-800 px-2 py-1 rounded">~/.config/claude/claude_desktop_config.json</code> — Claude Desktop</li>
+        <li><code class="bg-gray-800 px-2 py-1 rounded">~/.cursor/mcp.json</code> — Cursor</li>
+        <li><code class="bg-gray-800 px-2 py-1 rounded">~/.config/cline/mcp_settings.json</code> — Cline</li>
+      </ul>
     </section>
 
     <section id="profiles" class="mb-12">
@@ -257,6 +238,61 @@ nix run github:NacoSolutions/modern-cli-mcp -- --list-groups</code></pre>
       </ul>
     </section>
 
+    <section id="dynamic-toolsets" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6 text-cyan-400">Dynamic Toolsets (Beta)</h2>
+
+      <p class="text-gray-400 mb-4">
+        Start with minimal tools and enable groups on demand. Reduces cognitive load for AI agents by exposing only relevant tools.
+      </p>
+
+      <h3 class="text-xl font-semibold mb-2">Enable Dynamic Mode</h3>
+      <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-6"><code class="text-cyan-300">{
+  "mcpServers": {
+    "modern-cli": {
+      "command": "nix",
+      "args": ["run", "github:NacoSolutions/modern-cli-mcp", "--", "--dynamic-toolsets"]
+    }
+  }
+}</code></pre>
+
+      <h3 class="text-xl font-semibold mb-2">Pre-enable Specific Toolsets</h3>
+      <pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-6"><code class="text-cyan-300">{
+  "mcpServers": {
+    "modern-cli": {
+      "command": "nix",
+      "args": ["run", "github:NacoSolutions/modern-cli-mcp", "--", "--dynamic-toolsets", "--toolsets=filesystem,git"]
+    }
+  }
+}</code></pre>
+
+      <h3 class="text-xl font-semibold mb-2">Meta-tools</h3>
+      <p class="text-gray-400 mb-3">In dynamic mode, these tools are always available:</p>
+      <ul class="list-disc list-inside text-gray-400 space-y-1 mb-4">
+        <li><code class="bg-gray-800 px-2 py-1 rounded">list_available_toolsets</code> — Show all toolsets and their enabled status</li>
+        <li><code class="bg-gray-800 px-2 py-1 rounded">get_toolset_tools</code> — Preview tools in a toolset before enabling</li>
+        <li><code class="bg-gray-800 px-2 py-1 rounded">enable_toolset</code> — Activate a toolset (use "all" for everything)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">Available Toolsets</h3>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">filesystem</code> <span class="text-gray-500 text-sm">eza, bat, fd, dust, duf, rip</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">file_ops</code> <span class="text-gray-500 text-sm">read, write, edit, patch</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">search</code> <span class="text-gray-500 text-sm">rg, fzf, ast-grep, web</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">text</code> <span class="text-gray-500 text-sm">jq, yq, sd, hck, miller</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">git</code> <span class="text-gray-500 text-sm">status, add, commit, branch</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">github</code> <span class="text-gray-500 text-sm">repo, issue, pr, release, api</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">gitlab</code> <span class="text-gray-500 text-sm">issue, mr, pipeline</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">kubernetes</code> <span class="text-gray-500 text-sm">kubectl, stern, helm</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">container</code> <span class="text-gray-500 text-sm">podman, dive, trivy</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">network</code> <span class="text-gray-500 text-sm">xh, usql, doggo</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">system</code> <span class="text-gray-500 text-sm">shell, nix_shell, procs</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">archive</code> <span class="text-gray-500 text-sm">compress, decompress, list</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">reference</code> <span class="text-gray-500 text-sm">tldr, navi, grex</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">diff</code> <span class="text-gray-500 text-sm">delta, difftastic</span></div>
+        <div class="bg-gray-800 p-3 rounded"><code class="text-cyan-400">mcp</code> <span class="text-gray-500 text-sm">cache, tasks, context</span></div>
+      </div>
+    </section>
+
     <section id="agentignore" class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 text-cyan-400">.agentignore</h2>
 
@@ -333,6 +369,16 @@ target/
           </tr>
         </thead>
         <tbody>
+          <tr class="border-t border-gray-700">
+            <td class="px-4 py-3"><code>MCP_DYNAMIC_TOOLSETS</code></td>
+            <td class="px-4 py-3 text-gray-400">Enable dynamic toolsets mode</td>
+            <td class="px-4 py-3 text-gray-400">false</td>
+          </tr>
+          <tr class="border-t border-gray-700">
+            <td class="px-4 py-3"><code>MCP_TOOLSETS</code></td>
+            <td class="px-4 py-3 text-gray-400">Comma-separated toolsets to pre-enable</td>
+            <td class="px-4 py-3 text-gray-400">-</td>
+          </tr>
           <tr class="border-t border-gray-700">
             <td class="px-4 py-3"><code>RUST_LOG</code></td>
             <td class="px-4 py-3 text-gray-400">Logging level</td>
