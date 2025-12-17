@@ -2581,6 +2581,7 @@ impl ModernCliTools {
 
     /// Build a JSON response with item count summary.
     /// For tools that return JSON arrays or objects with countable items.
+    #[allow(dead_code)]
     fn build_json_response(&self, tool: &str, json: &str, uri: &str) -> CallToolResult {
         let count = serde_json::from_str::<serde_json::Value>(json)
             .ok()
@@ -9266,12 +9267,10 @@ impl ModernCliTools {
         }
 
         // For multiple sources, dest must be an existing directory
-        if sources.len() > 1 {
-            if !dest.is_dir() {
-                return Ok(CallToolResult::error(vec![Content::text(
-                    "Multiple sources specified but destination is not a directory",
-                )]));
-            }
+        if sources.len() > 1 && !dest.is_dir() {
+            return Ok(CallToolResult::error(vec![Content::text(
+                "Multiple sources specified but destination is not a directory",
+            )]));
         }
 
         let mut results: Vec<serde_json::Value> = vec![];
@@ -9422,12 +9421,10 @@ impl ModernCliTools {
         }
 
         // For multiple sources, dest must be an existing directory
-        if sources.len() > 1 {
-            if !dest.is_dir() {
-                return Ok(CallToolResult::error(vec![Content::text(
-                    "Multiple sources specified but destination is not a directory",
-                )]));
-            }
+        if sources.len() > 1 && !dest.is_dir() {
+            return Ok(CallToolResult::error(vec![Content::text(
+                "Multiple sources specified but destination is not a directory",
+            )]));
         }
 
         let mut results: Vec<serde_json::Value> = vec![];

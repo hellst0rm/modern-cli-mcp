@@ -223,21 +223,25 @@ pub fn format_file_edit_summary(path: &str, replacements: usize) -> String {
 }
 
 /// Format kubectl/k8s summary
+#[allow(dead_code)]
 pub fn format_kubectl_summary(resource: &str, count: usize) -> String {
     format!("Retrieved {} {} resources", count, resource)
 }
 
 /// Format container/podman summary
+#[allow(dead_code)]
 pub fn format_container_summary(action: &str, target: &str) -> String {
     format!("{} on {}", action, target)
 }
 
 /// Format HTTP request summary
+#[allow(dead_code)]
 pub fn format_http_summary(method: &str, url: &str, status: u16) -> String {
     format!("{} {} -> {}", method, url, status)
 }
 
 /// Format SQL query summary
+#[allow(dead_code)]
 pub fn format_sql_summary(rows: usize) -> String {
     format!("Query returned {} rows", rows)
 }
