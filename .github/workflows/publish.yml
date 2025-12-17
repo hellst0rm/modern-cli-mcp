@@ -140,9 +140,11 @@ jobs:
           include-output-paths: true
 
   # Publish to MCP Registry
+  # DISABLED: mcp-publisher binary not available at upstream URL
+  # Re-enable when https://github.com/modelcontextprotocol/registry provides Linux releases
   mcp-registry:
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: false # Disabled until upstream mcp-publisher is available
     permissions:
       id-token: write
       contents: read
