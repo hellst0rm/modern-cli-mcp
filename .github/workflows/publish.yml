@@ -140,11 +140,9 @@ jobs:
           include-output-paths: true
 
   # Publish to MCP Registry
-  # DISABLED: mcp-publisher binary not available at upstream URL
-  # Re-enable when https://github.com/modelcontextprotocol/registry provides Linux releases
   mcp-registry:
     runs-on: ubuntu-latest
-    if: false # Disabled until upstream mcp-publisher is available
+    if: github.event_name == 'release'
     permissions:
       id-token: write
       contents: read
@@ -154,15 +152,12 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Download mcp-publisher
+      - name: Install mcp-publisher
         run: |
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/download/latest/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz
-          chmod +x mcp-publisher
-          ./mcp-publisher --version
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
 
       - name: Publish to MCP Registry
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Authenticate via GitHub OIDC (automatic in GitHub Actions)
-          ./mcp-publisher publish --server-json server.json
+        run: ./mcp-publisher publish
