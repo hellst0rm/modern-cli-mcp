@@ -56,7 +56,7 @@ tags:
 - [architecture] Virtual tools: src/groups.rs with ToolGroup and AgentProfile enums
 - [research] GitHub Copilot found 2-5% benchmark improvement with reduced toolsets
 ## Current Status
-**Version**: 0.6.0 (released)
+**Version**: 0.6.2 (released)
 **Phase**: Active Development - Feature Complete
 
 ### What Works
@@ -67,16 +67,26 @@ tags:
 - Busybox-style CLI execution (`modern-cli-mcp eza -la`)
 - install.sh script with --user/--system and --full/--binary options
 - Dual-response mode (`--dual-response` flag) - COMPLETE
-  - All 104+ tools use build_response() pattern
-  - Returns summary + embedded resource in dual mode
-  - Returns raw data in normal mode
-  - format.rs with summary formatters
+- CI/CD: Cachix caching, AppImage builds, MCP registry publishing
 
 ### In Progress
-None - dual-response mode complete.
+None - feature complete.
 
 
 ## Recent Session
+- Released v0.6.2: CI/CD Infrastructure Fixes
+- Migrated from FlakeHub to standard GitHub URLs
+- Replaced Determinate Nix with Cachix (nacosolutions cache)
+- Removed Docker builds from CI (simplified workflow)
+- Fixed AppImage build issues:
+  - Renamed wrapped package to match binary name
+  - Use cp -L to handle Nix store symlinks
+- Fixed mcp-publisher download URL for MCP registry
+- Fixed clippy warnings (collapsible_if, dead_code)
+- CI workflow: build (7m), test (3m)
+- Publish workflow: build + appimage + mcp-registry + release-assets
+
+## Previous Session
 - Released v0.6.0: Dual-response mode complete
 - All 104+ tools refactored to use build_response() pattern
 - Tested dual-response mode - summary + embedded resource working
