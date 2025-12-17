@@ -74,7 +74,7 @@
 
         # Wrapped binary with all tools in PATH
         wrappedMcp = pkgs.symlinkJoin {
-          name = "modern-cli-mcp-wrapped";
+          name = "modern-cli-mcp";
           paths = [ mcpServer ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
