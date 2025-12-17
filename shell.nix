@@ -37,13 +37,7 @@ in
       Run 'menu' for complete command list.
     '';
 
-    packages =
-      rustTools
-      ++ webTools
-      ++ cliTools
-      ++ [
-        pkgs.fh # FlakeHub CLI
-      ];
+    packages = rustTools ++ webTools ++ cliTools;
 
     commands = [
       # Build & Run
@@ -148,38 +142,6 @@ in
         category = "nix";
         help = "Update flake inputs";
         command = "nix flake update";
-      }
-
-      # FlakeHub
-      {
-        name = "fh-search";
-        category = "flakehub";
-        help = "Search FlakeHub for flakes";
-        command = ''fh search "$@"'';
-      }
-      {
-        name = "fh-list";
-        category = "flakehub";
-        help = "List flake versions on FlakeHub";
-        command = ''fh list "$@"'';
-      }
-      {
-        name = "fh-resolve";
-        category = "flakehub";
-        help = "Resolve FlakeHub reference to URL";
-        command = ''fh resolve "$@"'';
-      }
-      {
-        name = "fh-init";
-        category = "flakehub";
-        help = "Initialize flake.nix with FlakeHub inputs";
-        command = "fh init";
-      }
-      {
-        name = "fh-add";
-        category = "flakehub";
-        help = "Add FlakeHub input to flake.nix";
-        command = ''fh add "$@"'';
       }
 
       # Scripts (pog-based)

@@ -116,29 +116,6 @@ jobs:
             sbom-nix-closure.txt \
             --repo ${{ github.repository }}
 
-  # Publish to FlakeHub
-  flakehub:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Install Nix
-        uses: DeterminateSystems/determinate-nix-action@v3
-
-      - uses: DeterminateSystems/flakehub-push@main
-        with:
-          visibility: public
-          name: NacoSolutions/modern-cli-mcp
-          tag: ${{ github.ref_name }}
-          include-output-paths: true
-
   # Publish to MCP Registry
   mcp-registry:
     runs-on: ubuntu-latest
