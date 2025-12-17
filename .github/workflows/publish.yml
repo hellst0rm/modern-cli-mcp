@@ -89,7 +89,7 @@ jobs:
       - name: Build AppImage
         run: |
           nix bundle --bundler github:ralismark/nix-appimage .#default
-          mv *.AppImage modern-cli-mcp-x86_64.AppImage
+          cp -L *.AppImage modern-cli-mcp-x86_64.AppImage
           chmod +x modern-cli-mcp-x86_64.AppImage
 
       - name: Upload AppImage artifact
